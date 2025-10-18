@@ -38,7 +38,11 @@ public class User {
 	private List<Project> projects;
 	
 
-	
+	//EMPTY CONSTRUCTOR
+    public User() {
+    	
+    }
+    
 	//DEFAULT CONSTRUCTOR
 	public User(LocalDateTime registrationDate) {
 		super();
