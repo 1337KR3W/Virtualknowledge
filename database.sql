@@ -31,13 +31,15 @@ CREATE TABLE IF NOT EXISTS projects (
 );
 
 -- -----------------------------------------------------
--- Sample data (optional)
+-- Sample data with BCrypt passwords
 -- -----------------------------------------------------
+-- Password "123" codificado con BCrypt: $2a$10$wBvK1lzL0f1uZT/5gzY.5OtXk.0v88ZqIMhA/zGxB1STLclozix7W
 INSERT INTO users (name, email, password) VALUES
-('pepetardo', 'pepetardo@gmail.com', '123'),
-('test', 'test@gmail.com', '123');
+('pepetardo', 'pepetardo@gmail.com', '$2a$10$wBvK1lzL0f1uZT/5gzY.5OtXk.0v88ZqIMhA/zGxB1STLclozix7W'),
+('test', 'test@gmail.com', '$2a$10$wBvK1lzL0f1uZT/5gzY.5OtXk.0v88ZqIMhA/zGxB1STLclozix7W');
 
+-- Projects
 INSERT INTO projects (name, description, user_id) VALUES
-('Virtualknowledge', 'Project to share knowledge between users', 1)
+('Virtualknowledge', 'Project to share knowledge between users', 1),
 ('Inventory System', 'Project to manage products', 1),
 ('Web Application', 'Internal web app development', 2);
