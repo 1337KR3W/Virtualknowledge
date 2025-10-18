@@ -40,3 +40,7 @@ initdb/
 
 # Otros archivos típicos de Docker
 *.env
+
+# Ignore Spring Boot properties with sensitive info
+src/main/resources/application.properties
+
