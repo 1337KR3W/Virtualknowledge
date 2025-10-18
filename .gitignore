@@ -31,3 +31,12 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Ignore MySQL Docker volume data
+db_data/
+
+# Ignore database initialization scripts
+initdb/
+
+# Otros archivos típicos de Docker
+*.env

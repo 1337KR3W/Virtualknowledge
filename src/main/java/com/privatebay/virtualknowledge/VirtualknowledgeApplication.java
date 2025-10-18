@@ -1,13 +1,13 @@
-package com.example.restfulExampleApp;
+package com.privatebay.virtualknowledge;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class RestfulExampleAppApplication {
+public class VirtualknowledgeApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(RestfulExampleAppApplication.class, args);
+		SpringApplication.run(VirtualknowledgeApplication.class, args);
 	}
 
 }
