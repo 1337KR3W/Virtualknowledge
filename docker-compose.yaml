@@ -15,8 +15,8 @@ services:
     networks:
       - springnet
     volumes:
-      - /db_data:/var/lib/mysql
-      - ../initdb:/docker-entrypoint-initdb.d
+      #- ./db_data:/var/lib/mysql
+      - ./initdb:/docker-entrypoint-initdb.d
 
 volumes:
   db_data:
