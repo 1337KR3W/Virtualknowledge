@@ -14,12 +14,12 @@ services:
       - "3306:3306"
     networks:
       - springnet
-      
-	volumes:
-	  - ../db_data:/var/lib/mysql
-	  - ../initdb:/docker-entrypoint-initdb.d
+    volumes:
+      - /db_data:/var/lib/mysql
+      - ../initdb:/docker-entrypoint-initdb.d
+
 volumes:
-	db_data:
+  db_data:
 
 networks:
   springnet:
