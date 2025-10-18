@@ -2,6 +2,8 @@ package com.privatebay.virtualknowledge.entity;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -26,12 +28,18 @@ public class Project {
     @Column(nullable = false, length = 300, unique = true)
 	private String description;
 	
-    @Column(name = "creatio_date", nullable = false, updatable = false)
+    @Column(name = "creation_date", nullable = false, updatable = false)
 	private LocalDateTime creationDate;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", nullable = false)
+	@JsonIgnore
 	private User user;
+	
+	//EMPTY CONSTRUCTOR
+	public Project() {
+		
+	}
 	
 	//DEFAULT CONSTRUCTOR
 	public Project(LocalDateTime creationDate) {
