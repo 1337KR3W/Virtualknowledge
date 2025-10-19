@@ -1,6 +1,6 @@
 package com.privatebay.virtualknowledge.controller;
 
-import com.privatebay.virtualknowledge.entity.Project;
+import com.privatebay.virtualknowledge.dto.ProjectDTO;
 import com.privatebay.virtualknowledge.service.ProjectService;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +17,7 @@ public class ProjectController {
     }
 
     @GetMapping("/findProjectsByUserId/{id}")
-    public List<Project> getProjectsByUserId(@PathVariable("id") Long userId) {
+    public List<ProjectDTO> getProjectsByUserId(@PathVariable("id") Long userId) {
         return projectService.findProjectsByUserId(userId);
     }
 }
