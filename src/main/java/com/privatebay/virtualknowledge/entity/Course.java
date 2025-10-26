@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
@@ -13,30 +14,34 @@ import jakarta.persistence.Table;
 public class Course {
 
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@Column(nullable = false, length = 64)
 	private String title;
 
+	@Column(nullable = false, length = 300)
 	private String description;
 
 	@Column(columnDefinition = "TEXT")
 	private String content;
 
-	@Column(name = "creation_date")
+	@Column(name = "creation_date", nullable = false, updatable = false)
 	private LocalDateTime creationDate;
 
+	// EMPTY CONSTRUCTOR
+	public Course() {
+		super();
+	}
+
+	// CONSTRUCTOR USING FIELDS (FULL)
 	public Course(Long id, String title, String description, String content, LocalDateTime creationDate) {
 		super();
 		this.id = id;
 		this.title = title;
 		this.description = description;
 		this.content = content;
-		this.creationDate = creationDate;
-	}
-
-	public Course() {
-		super();
+		this.creationDate = creationDate != null ? creationDate : LocalDateTime.now();
 	}
 
 	public String getTitle() {
@@ -70,10 +75,5 @@ public class Course {
 	public LocalDateTime getCreationDate() {
 		return creationDate;
 	}
-	
-	
-	
-	
-	
 
 }
