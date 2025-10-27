@@ -30,29 +30,8 @@ CREATE TABLE IF NOT EXISTS projects (
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- -----------------------------------------------------
--- Table: courses
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS courses (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  title VARCHAR(255) NOT NULL,
-  short_description VARCHAR(500),
-  content TEXT,
-  creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
 
--- -----------------------------------------------------
--- Table: enrollments
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS enrollments (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  user_id INT NOT NULL,
-  course_id INT NOT NULL,
-  enrolled_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  progress INT DEFAULT 0,
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-  FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
-);
+
 
 -- -----------------------------------------------------
 -- Sample data with BCrypt passwords
