@@ -37,9 +37,12 @@ public class AuthController {
         User user = userRepository.findByEmail(body.get("email"))
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // TEMPORAL: comparar texto plano
-        if (!body.get("password").equals(user.getPassword())) {
-            throw new RuntimeException("Invalid password");
+        // 🏆 Lógica de validación correcta
+        String rawPassword = body.get("password"); // Contraseña en texto plano de Postman (e.g., "123")
+        String encodedPassword = user.getPassword(); // Hash guardado en DB (e.g., "$2a$10$...")
+
+        if (!passwordEncoder.matches(rawPassword, encodedPassword)) { // Compara (texto_plano, hash_DB)
+            throw new RuntimeException("Invalid password"); // <-- Lanza este error si falla
         }
 
         String token = jwtService.generateToken(user.getEmail());
