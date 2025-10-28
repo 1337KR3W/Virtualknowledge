@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -35,7 +36,9 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable()) // forma actualizada para Spring Security 6+
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/auth/**").permitAll() // login y registro públicos
-                .anyRequest().authenticated()           // resto requiere JWT
+                .anyRequest().authenticated() // resto requiere JWT
+                ).sessionManagement(session -> session
+                		.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
