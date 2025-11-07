@@ -1,6 +1,6 @@
 # Virtualknowledge
       ┌───────────────────────────┐
-      |│              🐛         │|
+      |│              🐛         │|                   README.md comming soon...
       |│   [ { code(); } 🔐 ]    │|
       |│   [ { tests(); } ✅ ]   │|                                             
       |│   [ { deploy(); } 🌍 ]  │|                                           )
