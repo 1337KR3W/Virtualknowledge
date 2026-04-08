@@ -9,8 +9,8 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.privatebay</groupId>
-	<artifactId>virtualknowledge-0.0.1-SNAPSHOT.jar</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<artifactId>Virtualknowledge</artifactId>
+	<version>0.0.1</version>
 	<name>virtualknowledge</name>
 	<description>Virtualknowledge is an application developed to collect all the knowledge learned about application development in Spring Boot.</description>
 	<url/>

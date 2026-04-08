@@ -39,10 +39,12 @@ CREATE TABLE IF NOT EXISTS projects (
 -- Password "123" codificado con BCrypt: $2a$10$wBvK1lzL0f1uZT/5gzY.5OtXk.0v88ZqIMhA/zGxB1STLclozix7W
 INSERT INTO users (name, email, password) VALUES
 ('pepetardo', 'pepetardo@gmail.com', '$2a$10$0.NZ1S8IlzK6895EQZ5zheK5vvop0i/FMPCMhyAo6gHXsK6OqR7lC'),
-('test', 'test@gmail.com', '$2a$10$0.NZ1S8IlzK6895EQZ5zheK5vvop0i/FMPCMhyAo6gHXsK6OqR7lC');
+('test', 'test@gmail.com', '$2a$10$0.NZ1S8IlzK6895EQZ5zheK5vvop0i/FMPCMhyAo6gHXsK6OqR7lC'),
+('pepito', 'pepito@gmail.com', '$2a$10$wBvK1lzL0f1uZT/5gzY.5OtXk.0v88ZqIMhA/zGxB1STLclozix7W');
 
 -- Projects
 INSERT INTO projects (name, description, user_id) VALUES
 ('Virtualknowledge', 'Project to share knowledge between users', 1),
 ('Inventory System', 'Project to manage products', 1),
-('Web Application', 'Internal web app development', 2);
+('Web Application', 'Internal web app development', 2),
+('Testing with JUnit', 'Learn basics of testing with JUnit', 3);

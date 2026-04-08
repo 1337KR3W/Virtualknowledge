@@ -44,12 +44,11 @@ public class AuthController {
         User user = userRepository.findByEmail(body.get("email"))
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // 🏆 Lógica de validación correcta
-        String rawPassword = body.get("password"); // Contraseña en texto plano de Postman (e.g., "123")
-        String encodedPassword = user.getPassword(); // Hash guardado en DB (e.g., "$2a$10$...")
+        String rawPassword = body.get("password");
+        String encodedPassword = user.getPassword();
 
-        if (!passwordEncoder.matches(rawPassword, encodedPassword)) { // Compara (texto_plano, hash_DB)
-            throw new RuntimeException("Invalid password"); // <-- Lanza este error si falla
+        if (!passwordEncoder.matches(rawPassword, encodedPassword)) {
+            throw new RuntimeException("Invalid password");
         }
 
         String token = jwtService.generateToken(user.getEmail());
@@ -62,12 +61,10 @@ public class AuthController {
         String apiKeyReceived = body.get("apiKey");
         String apiSecretRawReceived = body.get("apiSecret");
 
-        // Usamos el servicio externo para validar
         if (!apiKeyService.validateCredentials(apiKeyReceived, apiSecretRawReceived)) {
              throw new RuntimeException("Invalid credentials for SSO");
         }
 
-        // Generar el JWT con la identidad fija del servicio
         String serviceName = apiKeyService.getFixedServiceName();
         String token = jwtService.generateToken(serviceName);
 
