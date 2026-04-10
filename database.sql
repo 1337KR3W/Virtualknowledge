@@ -65,5 +65,18 @@ INSERT INTO users (name, email, password) VALUES
 INSERT INTO projects (name, description, user_id) VALUES
 ('Virtualknowledge', 'Project to share knowledge between users', 1),
 ('Inventory System', 'Project to manage products', 1),
+('E-commerce Platform', 'Full-stack online store with payment integration', 1),
+('Inventory System', 'Project to manage warehouse products and stock', 1),
+('Customer Portal', 'Help desk and ticketing system for clients', 1),
+('Mobile Fitness App', 'Android/iOS app to track daily workouts', 1),
+('Data Analytics Dashboard', 'Visualizing sales data with real-time charts', 1),
+('Task Management Tool', 'Kanban style board for team collaboration', 1),
+('Virtual Learning Environment', 'LMS for online courses and student grading', 1),
+('Smart Home Controller', 'IoT project to manage lighting and temperature', 1),
+('Financial Tracker', 'Personal finance app with expense categorization', 1),
+('AI Chatbot Service', 'NLP-based bot for automated customer service', 1),
+('Recipe Book App', 'Social platform for sharing and saving cooking recipes', 1),
+('Supply Chain Logger', 'Blockchain project for tracking goods transit', 1),
+('Fleet Management', 'GPS tracking and maintenance for company vehicles', 1),
 ('Web Application', 'Internal web app development', 2),
 ('Testing with JUnit', 'Learn basics of testing with JUnit', 3);

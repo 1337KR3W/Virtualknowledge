@@ -14,7 +14,13 @@ public class UserController {
 
 	@GetMapping("/profile")
 	public Map<String, Object> getProfile() {
-		return Map.of("email", "pepito@gmail.com", "name", "Pepito Pérez", "status", "Active", "role", "USER");
+		return Map.of(
+				"id", 1L,
+				"email", "pepito@gmail.com", 
+				"name", "Pepito Pérez", 
+				"status", "Active", 
+				"role", "USER"
+				);
 	}
 
 }
