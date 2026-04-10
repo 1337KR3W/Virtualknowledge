@@ -26,21 +26,40 @@ CREATE TABLE IF NOT EXISTS projects (
   name VARCHAR(150) NOT NULL,
   description TEXT,
   creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  user_id INT NOT NULL,
+  user_id BIGINT NOT NULL,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+-- -----------------------------------------------------
+-- Table: api_keys
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS api_keys (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    api_key VARCHAR(255) NOT NULL UNIQUE,
+    api_secret VARCHAR(255) NOT NULL,
+    service_name VARCHAR(255) NOT NULL,
+    active BOOLEAN DEFAULT TRUE,
+    registration_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-
-
+-- -----------------------------------------------------
+-- Table: api_keys
+-- -----------------------------------------------------
+INSERT INTO api_keys (api_key, api_secret, service_name, active) 
+VALUES (
+    'mi-app-local', 
+    '$2a$10$WPX3cmIBX1ATF5lJWTB76uOKDmrG.LIQmRGOlGAJFh0iMptA0zTHa', 
+    'Servicio-SSO-Fijo', 
+    true
+);
 -- -----------------------------------------------------
 -- Sample data with BCrypt passwords
 -- -----------------------------------------------------
--- Password "123" codificado con BCrypt: $2a$10$wBvK1lzL0f1uZT/5gzY.5OtXk.0v88ZqIMhA/zGxB1STLclozix7W
+-- Password "123" codificado con BCrypt: $2a$10$x8opSxm6b9KFg0d8dRLwwumQgCYZstq0MUM./jBOmefjtjC5QKbXu
 INSERT INTO users (name, email, password) VALUES
-('pepetardo', 'pepetardo@gmail.com', '$2a$10$0.NZ1S8IlzK6895EQZ5zheK5vvop0i/FMPCMhyAo6gHXsK6OqR7lC'),
-('test', 'test@gmail.com', '$2a$10$0.NZ1S8IlzK6895EQZ5zheK5vvop0i/FMPCMhyAo6gHXsK6OqR7lC'),
-('pepito', 'pepito@gmail.com', '$2a$10$wBvK1lzL0f1uZT/5gzY.5OtXk.0v88ZqIMhA/zGxB1STLclozix7W');
+('pepetardo', 'pepetardo@gmail.com', '$2a$10$x8opSxm6b9KFg0d8dRLwwumQgCYZstq0MUM./jBOmefjtjC5QKbXu'),
+('test', 'test@gmail.com', '$2a$10$x8opSxm6b9KFg0d8dRLwwumQgCYZstq0MUM./jBOmefjtjC5QKbXu'),
+('pepito', 'pepito@gmail.com', '$2a$10$x8opSxm6b9KFg0d8dRLwwumQgCYZstq0MUM./jBOmefjtjC5QKbXu');
 
 -- Projects
 INSERT INTO projects (name, description, user_id) VALUES

@@ -26,6 +26,9 @@ public class ApiKeyEntity {
     // Nombre que identifica al servicio/cliente en el JWT
     @Column(name = "service_name", unique = true, nullable = false)
     private String serviceName;
+    
+    
+    private boolean active = true;
 
     // --- Constructor, Getters y Setters ---
 
@@ -48,4 +51,6 @@ public class ApiKeyEntity {
 
     public String getServiceName() { return serviceName; }
     public void setServiceName(String serviceName) { this.serviceName = serviceName; }
+    
+    public boolean isActive() { return active; }
 }

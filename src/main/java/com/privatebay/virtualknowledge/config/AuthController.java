@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+@CrossOrigin(origins = "http://localhost:4200", allowedHeaders = "*", methods = {RequestMethod.POST, RequestMethod.GET, RequestMethod.OPTIONS})
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -46,7 +47,8 @@ public class AuthController {
 
         String rawPassword = body.get("password");
         String encodedPassword = user.getPassword();
-
+        System.out.println("Password enviada: " + rawPassword);
+        System.out.println("Hash en BD: " + encodedPassword);
         if (!passwordEncoder.matches(rawPassword, encodedPassword)) {
             throw new RuntimeException("Invalid password");
         }
@@ -62,10 +64,14 @@ public class AuthController {
         String apiSecretRawReceived = body.get("apiSecret");
 
         if (!apiKeyService.validateCredentials(apiKeyReceived, apiSecretRawReceived)) {
-             throw new RuntimeException("Invalid credentials for SSO");
+
+            throw new org.springframework.web.server.ResponseStatusException(
+                org.springframework.http.HttpStatus.UNAUTHORIZED, "Credenciales de API inválidas");
         }
 
-        String serviceName = apiKeyService.getFixedServiceName();
+        String serviceName = apiKeyService.getServiceNameByApiKey(apiKeyReceived);
+        
+        // 3. Generamos el JWT para ese servicio específico
         String token = jwtService.generateToken(serviceName);
 
         return Map.of("token", token);
