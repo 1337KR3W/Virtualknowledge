@@ -30,33 +30,41 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public Map<String, String> register(@RequestBody Map<String, String> body) {
+    public Map<String, Object> register(@RequestBody Map<String, String> body) { // Cambiado a Object
         String name = body.get("name");
         String email = body.get("email");
         String password = passwordEncoder.encode(body.get("password"));
-        User user = new User(name, email, password, java.time.LocalDateTime.now());
-        userRepository.save(user);
+        String role = body.get("role");
+        String status = body.get("status");
+        
+        User user = new User(name, email, password, java.time.LocalDateTime.now(), role, status);
+        User savedUser = userRepository.save(user);
+        
         String token = jwtService.generateToken(email);
-        return Map.of("token", token);
+        
+        return Map.of(
+            "token", token,
+            "id", savedUser.getId()
+        );
     }
 
     @PostMapping("/login")
-    public Map<String, String> login(@RequestBody Map<String, String> body) {
+    public Map<String, Object> login(@RequestBody Map<String, String> body) { // Cambiado a Object
         User user = userRepository.findByEmail(body.get("email"))
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        String rawPassword = body.get("password");
-        String encodedPassword = user.getPassword();
-        System.out.println("Password enviada: " + rawPassword);
-        System.out.println("Hash en BD: " + encodedPassword);
-        if (!passwordEncoder.matches(rawPassword, encodedPassword)) {
+        if (!passwordEncoder.matches(body.get("password"), user.getPassword())) {
             throw new RuntimeException("Invalid password");
         }
 
         String token = jwtService.generateToken(user.getEmail());
-        return Map.of("token", token);
+        
+        // AQUÍ ESTÁ LA CLAVE: Incluimos el ID en la respuesta
+        return Map.of(
+            "token", token,
+            "id", user.getId()
+        );
     }
-    
     @PostMapping("/ssoToken")
     public Map<String, String> ssoToken(@RequestBody Map<String, String> body) {
         

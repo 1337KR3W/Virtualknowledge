@@ -11,27 +11,18 @@ import java.util.stream.Collectors;
 @Service
 public class ProjectService {
 
-    private final ProjectRepository projectRepository;
+	private final ProjectRepository projectRepository;
 
-    public ProjectService(ProjectRepository projectRepository) {
-        this.projectRepository = projectRepository;
-    }
-    
-    
+	public ProjectService(ProjectRepository projectRepository) {
+		this.projectRepository = projectRepository;
+	}
 
-    public List<ProjectDTO> findProjectsByUserId(Long userId) {
-        List<Project> projects = projectRepository.findByUserId(userId);
-        return projects.stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
-    }
+	public List<ProjectDTO> findProjectsByUserId(Long userId) {
+		List<Project> projects = projectRepository.findByUserId(userId);
+		return projects.stream().map(this::convertToDTO).collect(Collectors.toList());
+	}
 
-    private ProjectDTO convertToDTO(Project project) {
-        return new ProjectDTO(
-                project.getId(),
-                project.getName(),
-                project.getDescription(),
-                project.getCreationDate()
-        );
-    }
+	private ProjectDTO convertToDTO(Project project) {
+		return new ProjectDTO(project.getId(), project.getName(), project.getDescription(), project.getCreationDate());
+	}
 }
