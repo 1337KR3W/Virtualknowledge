@@ -45,7 +45,21 @@ CREATE TABLE IF NOT EXISTS projects (
   user_id BIGINT NOT NULL,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
-
+-- -----------------------------------------------------
+-- Table: timesheet
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS timesheets (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    project_id BIGINT NOT NULL,
+    work_date DATE NOT NULL,      -- La fecha exacta del día (ej: 2026-04-13)
+    hours DECIMAL(4,2) NOT NULL, -- Para permitir 7.5 horas, por ejemplo
+    comment TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_ts_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_ts_project FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
+);
 -- -----------------------------------------------------
 -- Table: api_keys
 -- -----------------------------------------------------
@@ -84,6 +98,7 @@ INSERT INTO user_roles (user_id, role_id) VALUES
 (1, 1),
 (2, 1),
 (3, 2);
+
 -- Projects
 INSERT INTO projects (name, description, user_id) VALUES
 ('Virtualknowledge', 'Project to share knowledge between users', 3),
