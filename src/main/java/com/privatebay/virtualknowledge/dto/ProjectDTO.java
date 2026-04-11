@@ -1,22 +1,24 @@
 package com.privatebay.virtualknowledge.dto;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public class ProjectDTO {
 	private Long id;
 	private String name;
 	private String description;
-	private LocalDateTime creationDate;
+	private LocalDate startDate;
+	private LocalDate endDate;
 
-	//CONSTRUCTOR USING PARAMETERS
-	public ProjectDTO(Long id, String name, String description, LocalDateTime creationDate) {
+	// CONSTRUCTOR USING PARAMETERS
+	public ProjectDTO(Long id, String name, String description, LocalDate startDate, LocalDate endDate) {
 		this.id = id;
 		this.name = name;
 		this.description = description;
-		this.creationDate = creationDate;
+		this.startDate = startDate;
+		this.endDate = endDate;
 	}
 
-	//GETTERS AND SETTERS
+	// GETTERS AND SETTERS
 	public Long getId() {
 		return id;
 	}
@@ -29,7 +31,16 @@ public class ProjectDTO {
 		return description;
 	}
 
-	public LocalDateTime getCreationDate() {
-		return creationDate;
+	public LocalDate getStartDate() {
+		return startDate;
 	}
+
+	public LocalDate getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(LocalDate endDate) {
+		this.endDate = endDate;
+	}
+
 }
