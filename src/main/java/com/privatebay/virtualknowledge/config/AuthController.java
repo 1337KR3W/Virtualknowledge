@@ -55,7 +55,7 @@ public class AuthController {
 		user.addRole(userRole);
 
 		User savedUser = userRepository.save(user);
-		String token = jwtService.generateToken(email);
+		String token = jwtService.generateToken(email, savedUser.getId());
 
 		return Map.of("token", token, "id", savedUser.getId(), "message", "User registered successfully");
 	}
@@ -69,7 +69,7 @@ public class AuthController {
 			throw new RuntimeException("Invalid password");
 		}
 
-		String token = jwtService.generateToken(user.getEmail());
+		String token = jwtService.generateToken(user.getEmail(), user.getId());
 
 		List<String> roles = user.getRoles().stream().map(role -> role.getName().name()).collect(Collectors.toList());
 
@@ -88,7 +88,7 @@ public class AuthController {
 		}
 
 		String serviceName = apiKeyService.getServiceNameByApiKey(apiKeyReceived);
-		String token = jwtService.generateToken(serviceName);
+		String token = jwtService.generateToken(serviceName, 0L);
 
 		return Map.of("token", token);
 	}
