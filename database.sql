@@ -1,6 +1,5 @@
 -- -----------------------------------------------------
 -- Initialization script: database.sql
--- Creates the 'users' and 'projects' tables
 -- -----------------------------------------------------
 
 -- Create database if it does not exist (safety)
@@ -16,10 +15,25 @@ CREATE TABLE IF NOT EXISTS users (
   email VARCHAR(150) NOT NULL UNIQUE,
   password VARCHAR(255) NOT NULL,
   registration_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  role VARCHAR(20) NOT NULL DEFAULT 'USER',
   status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE'
 );
-
+-- -----------------------------------------------------
+-- Table: roles
+-- -----------------------------------------------------
+CREATE TABLE roles (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(20) NOT NULL UNIQUE
+);
+-- -----------------------------------------------------
+-- Table: user_roles
+-- -----------------------------------------------------
+CREATE TABLE user_roles (
+    user_id BIGINT NOT NULL,
+    role_id BIGINT NOT NULL,
+    PRIMARY KEY (user_id, role_id),
+    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_role FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
+);
 -- -----------------------------------------------------
 -- Table: projects
 -- -----------------------------------------------------
@@ -59,10 +73,14 @@ VALUES (
 -- -----------------------------------------------------
 -- Password "123" codificado con BCrypt: $2a$10$x8opSxm6b9KFg0d8dRLwwumQgCYZstq0MUM./jBOmefjtjC5QKbXu
 INSERT INTO users (name, email, password, registration_date, role, status) VALUES
-('pepetardo', 'pepetardo@gmail.com', '$2a$10$x8opSxm6b9KFg0d8dRLwwumQgCYZstq0MUM./jBOmefjtjC5QKbXu', CURRENT_TIMESTAMP, 'USER', 'ACTIVE'),
-('test', 'test@gmail.com', '$2a$10$x8opSxm6b9KFg0d8dRLwwumQgCYZstq0MUM./jBOmefjtjC5QKbXu', CURRENT_TIMESTAMP, 'USER', 'ACTIVE'),
-('pepito', 'pepito@gmail.com', '$2a$10$x8opSxm6b9KFg0d8dRLwwumQgCYZstq0MUM./jBOmefjtjC5QKbXu', CURRENT_TIMESTAMP, 'USER', 'ACTIVE');
+('pepetardo', 'pepetardo@gmail.com', '$2a$10$x8opSxm6b9KFg0d8dRLwwumQgCYZstq0MUM./jBOmefjtjC5QKbXu', CURRENT_TIMESTAMP, 'ACTIVE'),
+('test', 'test@gmail.com', '$2a$10$x8opSxm6b9KFg0d8dRLwwumQgCYZstq0MUM./jBOmefjtjC5QKbXu', CURRENT_TIMESTAMP, 'ACTIVE'),
+('pepito', 'pepito@gmail.com', '$2a$10$x8opSxm6b9KFg0d8dRLwwumQgCYZstq0MUM./jBOmefjtjC5QKbXu', CURRENT_TIMESTAMP, 'ACTIVE');
 
+INSERT INTO user_roles (user_id, role_id) VALUES 
+(1, 1),
+(2, 1),
+(3, 2);
 -- Projects
 INSERT INTO projects (name, description, user_id) VALUES
 ('Virtualknowledge', 'Project to share knowledge between users', 3),

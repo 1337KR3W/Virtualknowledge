@@ -1,11 +1,15 @@
 package com.privatebay.virtualknowledge.dto;
 
+import java.util.Set;
+
+import com.privatebay.virtualknowledge.entity.Role;
+
 public class UserDTO {
 	private Long id;
     private String email;
     private String name;
     private String status;
-    private String role;
+    private Set<Role> role;
     
     
     
@@ -13,7 +17,7 @@ public class UserDTO {
 		super();
 	}
 
-	public UserDTO(Long id, String name, String email, String role, String status) {
+	public UserDTO(Long id, String name, String email, Set<Role> role, String status) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -45,10 +49,10 @@ public class UserDTO {
 	public void setStatus(String status) {
 		this.status = status;
 	}
-	public String getRole() {
+	public Set<Role> getRole() {
 		return role;
 	}
-	public void setRole(String role) {
+	public void setRole(Set<Role> role) {
 		this.role = role;
 	}
 

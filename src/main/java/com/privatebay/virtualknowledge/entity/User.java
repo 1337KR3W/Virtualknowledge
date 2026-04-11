@@ -1,14 +1,20 @@
 package com.privatebay.virtualknowledge.entity;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -33,8 +39,13 @@ public class User {
 	@Column(name = "registration_date", nullable = false, updatable = false)
 	private LocalDateTime registrationDate;
 
-	@Column(nullable = false, length = 20)
-	private String role = "USER";
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(
+	    name = "user_roles",
+	    joinColumns = @JoinColumn(name = "user_id"),
+	    inverseJoinColumns = @JoinColumn(name = "role_id")
+	)
+	private Set<Role> roles = new HashSet<>();
 
 	@Column(nullable = false, length = 20)
 	private String status = "ACTIVE";
@@ -55,13 +66,13 @@ public class User {
 	}
 
 	// CONSTRUCTOR USING FIELDS
-	public User(String name, String email, String password, LocalDateTime registrationDate, String role,
+	public User(String name, String email, String password, LocalDateTime registrationDate, Set<Role> roles,
 			String status) {
 		this.name = name;
 		this.email = email;
 		this.password = password;
 		this.registrationDate = registrationDate;
-		this.role = role;
+		this.roles = roles;
 		this.status = status;
 	}
 
@@ -97,14 +108,21 @@ public class User {
 	public LocalDateTime getRegistrationDate() {
 		return registrationDate;
 	}
-
-	public String getRole() {
-		return role;
+	public void setRegistrationDate(LocalDateTime registrationDate) {
+		this.registrationDate = registrationDate;
 	}
 
-	public void setRole(String role) {
-		this.role = role;
+	public Set<Role> getRole() {
+		return roles;
 	}
+
+	public void setRole(Set<Role> roles) {
+		this.roles = roles;
+	}
+	
+	public void addRole(Role role) {
+        this.roles.add(role);
+    }
 
 	public String getStatus() {
 		return status;
