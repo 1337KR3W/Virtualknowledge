@@ -18,11 +18,20 @@ public class ProjectController {
         this.projectService = projectService;
     }
 
-    @GetMapping("/findProjectsByUserId/{id}")
-    public List<ProjectDTO> getProjectsByUserId(@PathVariable("id") Long userId) {
-        return projectService.findProjectsByUserId(userId);
+    /**
+     * USADO POR: ProjectsPage (Listado Histórico)
+     * Retorna TODOS los proyectos del usuario sin filtrar por fecha.
+     */
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<ProjectDTO>> getAllProjects(@PathVariable Long userId) {
+        List<ProjectDTO> projects = projectService.findProjectsByUserId(userId);
+        return ResponseEntity.ok(projects);
     }
-    
+
+    /**
+     * USADO POR: TimeSheetComponent (Reporte Semanal)
+     * Retorna solo los proyectos vigentes en la semana indicada.
+     */
     @GetMapping("/user/{userId}/week/{weekId}")
     public ResponseEntity<List<ProjectDTO>> getProjectsByWeek(
             @PathVariable Long userId, 
