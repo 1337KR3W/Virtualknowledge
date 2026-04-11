@@ -42,14 +42,22 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
 		}
 
-		if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-			UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-			UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null,
-					userDetails.getAuthorities());
-			SecurityContextHolder.getContext().setAuthentication(authToken);
+		// En JwtAuthFilter.java
+		if (email != null) {
+		    UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+		    
+		    // Si el extractEmail no lanzó excepción, el token es técnicamente válido
+		    // Solo nos queda meterlo en el contexto
+		    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+		            userDetails, 
+		            null,
+		            userDetails.getAuthorities()
+		    );
+		    
+		    SecurityContextHolder.getContext().setAuthentication(authToken);
 		}
 
-		filterChain.doFilter(request, response);
+	    filterChain.doFilter(request, response);
 	}
 
 }
