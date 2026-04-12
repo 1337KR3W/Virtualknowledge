@@ -62,28 +62,6 @@ CREATE TABLE IF NOT EXISTS timesheets (
     CONSTRAINT fk_ts_project FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
 );
 -- -----------------------------------------------------
--- Table: api_keys
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS api_keys (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    api_key VARCHAR(255) NOT NULL UNIQUE,
-    api_secret VARCHAR(255) NOT NULL,
-    service_name VARCHAR(255) NOT NULL,
-    active BOOLEAN DEFAULT TRUE,
-    registration_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- -----------------------------------------------------
--- Table: api_keys
--- -----------------------------------------------------
-INSERT INTO api_keys (api_key, api_secret, service_name, active) 
-VALUES (
-    'mi-app-local', 
-    '$2a$10$WPX3cmIBX1ATF5lJWTB76uOKDmrG.LIQmRGOlGAJFh0iMptA0zTHa', 
-    'Servicio-SSO-Fijo', 
-    true
-);
--- -----------------------------------------------------
 -- Sample data with BCrypt passwords
 -- -----------------------------------------------------
 -- Password "123" codificado con BCrypt: $2a$10$x8opSxm6b9KFg0d8dRLwwumQgCYZstq0MUM./jBOmefjtjC5QKbXu
