@@ -26,18 +26,14 @@ public class TimeSheetService {
     @Autowired
     private ProjectRepository projectRepository;
 
-    /**
-     * Recupera los datos de una semana y los transforma al formato del DTO
-     */
+
     public TimeSheetRequestDTO getTimeSheetByWeek(Long userId, String weekId) {
-        // 1. Calcular rango de fechas (Basado en ISO Week: Lunes a Domingo)
+
         LocalDate monday = LocalDate.parse(weekId + "-1", DateTimeFormatter.ISO_WEEK_DATE);
         LocalDate sunday = monday.plusDays(6);
 
-        // 2. Obtener registros de la DB
         List<TimeSheet> entries = timeSheetRepository.findByUserIdAndWorkDateBetween(userId, monday, sunday);
 
-        // 3. Agrupar por Proyecto para construir las filas (rows)
         Map<Long, ProjectTimeRowDTO> rowsMap = new HashMap<>();
 
         for (TimeSheet ts : entries) {
@@ -50,12 +46,10 @@ public class TimeSheetService {
                 return newRow;
             });
 
-            // Mapear la fecha al Key (mon, tue, etc.)
             String dayKey = ts.getWorkDate().getDayOfWeek().name().substring(0, 3).toLowerCase();
             row.getDays().put(dayKey, new TimeEntryDTO(ts.getHours(), ts.getComment()));
         }
 
-        // 4. Montar el DTO final
         TimeSheetRequestDTO response = new TimeSheetRequestDTO();
         response.setWeekId(weekId);
         response.setUserId(userId);
@@ -66,11 +60,9 @@ public class TimeSheetService {
 
     @Transactional
     public void saveWeek(TimeSheetRequestDTO request) {
-        // Tu lógica actual de parseo
         LocalDate monday = LocalDate.parse(request.getWeekId() + "-1", DateTimeFormatter.ISO_WEEK_DATE);
         LocalDate sunday = monday.plusDays(6);
 
-        // Borrado preventivo (IDOR protegido por el controller que inyecta el userId)
         timeSheetRepository.deleteByUserIdAndWorkDateBetween(request.getUserId(), monday, sunday);
 
         User user = userRepository.findById(request.getUserId())

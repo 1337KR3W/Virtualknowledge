@@ -9,7 +9,6 @@ public class ProjectDTO {
 	private LocalDate startDate;
 	private LocalDate endDate;
 
-	// CONSTRUCTOR USING PARAMETERS
 	public ProjectDTO(Long id, String name, String description, LocalDate startDate, LocalDate endDate) {
 		this.id = id;
 		this.name = name;
@@ -18,7 +17,6 @@ public class ProjectDTO {
 		this.endDate = endDate;
 	}
 
-	// GETTERS AND SETTERS
 	public Long getId() {
 		return id;
 	}

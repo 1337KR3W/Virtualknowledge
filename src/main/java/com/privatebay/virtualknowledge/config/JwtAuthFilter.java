@@ -42,12 +42,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
 		}
 
-		// En JwtAuthFilter.java
 		if (email != null) {
 		    UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 		    
-		    // Si el extractEmail no lanzó excepción, el token es técnicamente válido
-		    // Solo nos queda meterlo en el contexto
 		    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
 		            userDetails, 
 		            null,

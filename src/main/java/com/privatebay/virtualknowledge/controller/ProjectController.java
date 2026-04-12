@@ -21,10 +21,6 @@ public class ProjectController {
         this.securityService = securityService;
     }
 
-    /**
-     * USADO POR: ProjectsPage (Listado Histórico)
-     * Ruta limpia: /projects/my-projects
-     */
     @GetMapping("/my-projects")
     public ResponseEntity<List<ProjectDTO>> getAllProjects() {
         
@@ -34,10 +30,6 @@ public class ProjectController {
         return ResponseEntity.ok(projects);
     }
 
-    /**
-     * USADO POR: TimeSheetComponent (Reporte Semanal)
-     * Ruta limpia: /projects/my-projects/week/{weekId}
-     */
     @GetMapping("/my-projects/week/{weekId}")
     public ResponseEntity<List<ProjectDTO>> getProjectsByWeek(@PathVariable String weekId) {
        

@@ -71,17 +71,14 @@ public class ApiKeyFilter extends OncePerRequestFilter {
             return;
         }
 
-     // 1. Creamos una autoridad para el servicio
         var authority = new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_SERVICE");
 
-        // 2. Creamos un objeto de autenticación para Spring Security
         var authentication = new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
-                apiKeyEntity.getServiceName(), // El nombre del servicio (ej. Servicio-SSO-Fijo)
+                apiKeyEntity.getServiceName(),
                 null, 
                 java.util.List.of(authority)
         );
 
-        // 3. Lo guardamos en el contexto de seguridad
         org.springframework.security.core.context.SecurityContextHolder.getContext().setAuthentication(authentication);
 
         System.out.println("DEBUG: Contexto de seguridad establecido para: " + apiKeyEntity.getServiceName());

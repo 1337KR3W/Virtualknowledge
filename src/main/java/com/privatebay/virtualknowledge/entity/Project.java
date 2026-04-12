@@ -1,10 +1,7 @@
 package com.privatebay.virtualknowledge.entity;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -40,18 +37,15 @@ public class Project {
 	@JsonIgnore
 	private User user;
 
-	// EMPTY CONSTRUCTOR
 	public Project() {
 
 	}
 
-	// DEFAULT CONSTRUCTOR
 	public Project(LocalDate startDate) {
 		super();
 		this.startDate = LocalDate.now();
 	}
 
-	// CONSTRUCTOR USING FIELDS
 	public Project(String name, String description, LocalDate startDate, LocalDate endDate) {
 		super();
 		this.name = name;
@@ -60,7 +54,6 @@ public class Project {
 		this.endDate = endDate;
 	}
 
-	// GETTERS AND SETTERS
 	public User getUser() {
 		return user;
 	}

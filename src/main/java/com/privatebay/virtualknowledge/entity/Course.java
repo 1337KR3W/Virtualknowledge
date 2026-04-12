@@ -29,12 +29,10 @@ public class Course {
 	@Column(name = "creation_date", nullable = false, updatable = false)
 	private LocalDateTime creationDate;
 
-	// EMPTY CONSTRUCTOR
 	public Course() {
 		super();
 	}
 
-	// CONSTRUCTOR USING FIELDS (FULL)
 	public Course(Long id, String title, String description, String content, LocalDateTime creationDate) {
 		super();
 		this.id = id;

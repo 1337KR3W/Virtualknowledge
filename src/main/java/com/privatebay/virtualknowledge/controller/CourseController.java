@@ -16,7 +16,6 @@ public class CourseController {
         this.courseService = courseService;
     }
 
-    // Endpoint para obtener todos los cursos
     @GetMapping
     public List<Course> getAllCourses() {
         return courseService.getAllCourses();

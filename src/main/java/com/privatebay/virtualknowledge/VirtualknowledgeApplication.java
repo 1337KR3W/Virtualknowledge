@@ -11,7 +11,7 @@ public class VirtualknowledgeApplication {
 
 	public static void main(String[] args) {
 		Dotenv dotenv = Dotenv.configure()
-                .directory("./") // busca en la raíz del proyecto
+                .directory("./")
                 .ignoreIfMissing()
                 .load();
         dotenv.entries().forEach(entry -> System.setProperty(entry.getKey(), entry.getValue()));

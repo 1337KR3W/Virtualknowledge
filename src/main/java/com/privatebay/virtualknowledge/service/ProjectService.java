@@ -28,24 +28,19 @@ public class ProjectService {
 	}
 	
 	public List<ProjectDTO> getProjectsForWeek(Long userId, String weekId) {
-	    // 1. Convertir "2026-W15" a fechas reales
-	    // Dividimos el string
+
 	    String[] parts = weekId.split("-W");
 	    int year = Integer.parseInt(parts[0]);
 	    int week = Integer.parseInt(parts[1]);
 
-	    // Calcular el lunes de esa semana
 	    LocalDate weekStart = LocalDate.of(year, 1, 1)
 	            .with(java.time.temporal.WeekFields.ISO.weekOfYear(), week)
 	            .with(java.time.temporal.WeekFields.ISO.dayOfWeek(), 1);
 	    
-	    // El domingo de esa semana
 	    LocalDate weekEnd = weekStart.plusDays(6);
 
-	    // 2. Llamar al repositorio con el rango de fechas
 	    List<Project> projects = projectRepository.findActiveProjectsInWeek(userId, weekStart, weekEnd);
 
-	    // 3. Convertir a DTO
 	    return projects.stream().map(p -> new ProjectDTO(
 	        p.getId(), 
 	        p.getName(),

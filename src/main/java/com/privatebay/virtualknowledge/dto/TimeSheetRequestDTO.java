@@ -3,7 +3,7 @@ package com.privatebay.virtualknowledge.dto;
 import java.util.List;
 
 public class TimeSheetRequestDTO {
-	private String weekId; // Ejemplo: "2026-W15"
+	private String weekId;
 	private String globalComment;
 	private List<ProjectTimeRowDTO> rows;
 	private Long userId;

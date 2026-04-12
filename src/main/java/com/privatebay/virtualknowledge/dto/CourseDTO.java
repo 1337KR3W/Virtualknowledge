@@ -9,7 +9,6 @@ public class CourseDTO {
     private String description;
     private LocalDateTime creationDate;
 
-    //CONSTRUCTOR USING FIELDS (FULL)
     public CourseDTO(Long id, String title, String description, LocalDateTime creationDate) {
         this.id = id;
         this.title = title;
@@ -17,7 +16,6 @@ public class CourseDTO {
         this.creationDate = creationDate;
     }
 
-    // Getters
     public Long getId() { return id; }
     public String getTitle() { return title; }
     public String getDescription() { return description; }

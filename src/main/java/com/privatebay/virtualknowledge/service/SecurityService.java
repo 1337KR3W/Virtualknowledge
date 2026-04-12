@@ -15,9 +15,6 @@ public class SecurityService {
         this.userRepository = userRepository;
     }
 
-    /**
-     * Obtiene el ID del usuario autenticado actualmente desde el JWT
-     */
     public Long getCurrentUserId() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -31,9 +28,6 @@ public class SecurityService {
         throw new RuntimeException("No hay un usuario autenticado en el contexto de seguridad");
     }
     
-    /**
-     * Obtiene el objeto User completo por si lo necesitas
-     */
     public User getCurrentUser() {
         Long id = getCurrentUserId();
         return userRepository.findById(id).orElseThrow();

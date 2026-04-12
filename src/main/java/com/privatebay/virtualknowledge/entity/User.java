@@ -22,7 +22,6 @@ import jakarta.persistence.Table;
 @Table(name = "users")
 public class User {
 
-	// ATRIBUTES
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -39,33 +38,24 @@ public class User {
 	@Column(name = "registration_date", nullable = false, updatable = false)
 	private LocalDateTime registrationDate;
 
-	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(
-	    name = "user_roles",
-	    joinColumns = @JoinColumn(name = "user_id"),
-	    inverseJoinColumns = @JoinColumn(name = "role_id")
-	)
-	private Set<Role> roles = new HashSet<>();
-
 	@Column(nullable = false, length = 20)
 	private String status = "ACTIVE";
 
-	// RELATIONSHIPS
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+	private Set<Role> roles = new HashSet<>();
+
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Project> projects;
 
-	// EMPTY CONSTRUCTOR
 	public User() {
-
 	}
 
-	// DEFAULT CONSTRUCTOR
 	public User(LocalDateTime registrationDate) {
 		super();
 		this.registrationDate = LocalDateTime.now();
 	}
 
-	// CONSTRUCTOR USING FIELDS
 	public User(String name, String email, String password, LocalDateTime registrationDate, Set<Role> roles,
 			String status) {
 		this.name = name;
@@ -76,7 +66,6 @@ public class User {
 		this.status = status;
 	}
 
-	// GETTERS AND SETTERS
 	public String getName() {
 		return name;
 	}
@@ -108,6 +97,7 @@ public class User {
 	public LocalDateTime getRegistrationDate() {
 		return registrationDate;
 	}
+
 	public void setRegistrationDate(LocalDateTime registrationDate) {
 		this.registrationDate = registrationDate;
 	}
@@ -119,10 +109,10 @@ public class User {
 	public void setRoles(Set<Role> roles) {
 		this.roles = roles;
 	}
-	
+
 	public void addRole(Role role) {
-        this.roles.add(role);
-    }
+		this.roles.add(role);
+	}
 
 	public String getStatus() {
 		return status;

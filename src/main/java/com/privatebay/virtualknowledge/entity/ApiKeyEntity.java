@@ -15,22 +15,16 @@ public class ApiKeyEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Identificador público, debe ser único
     @Column(name = "api_key", unique = true, nullable = false)
     private String apiKey;
 
-    // El secreto hasheado, usado para la validación
     @Column(name = "api_secret", nullable = false)
     private String apiSecret;
 
-    // Nombre que identifica al servicio/cliente en el JWT
     @Column(name = "service_name", unique = true, nullable = false)
     private String serviceName;
-    
-    
+        
     private boolean active = true;
-
-    // --- Constructor, Getters y Setters ---
 
     public ApiKeyEntity() {}
 
