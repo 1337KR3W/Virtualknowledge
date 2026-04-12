@@ -18,49 +18,51 @@ import javax.crypto.SecretKey;
 @Service
 public class JwtService {
 
-    @Value("${jwt.secret}")
-    private String secretKey;
+	@Value("${jwt.secret}")
+	private String secretKey;
 
-    @Value("${jwt.expiration}")
-    private long expirationTime;
+	@Value("${jwt.expiration}")
+	private long expirationTime;
 
-    private SecretKey getSigningKey() {
-        return Keys.hmacShaKeyFor(secretKey.getBytes());
-    }
+	private SecretKey getSigningKey() {
+		return Keys.hmacShaKeyFor(secretKey.getBytes());
+	}
 
-    public String generateToken(String email, Long userId, java.util.Collection<? extends org.springframework.security.core.GrantedAuthority> authorities) {
-        
-        List<String> roles = authorities.stream()
-                .map(org.springframework.security.core.GrantedAuthority::getAuthority)
-                .collect(java.util.stream.Collectors.toList());
+	public String generateToken(String email, Long userId, Collection<? extends GrantedAuthority> authorities) {
 
-        return Jwts.builder()
-                .setSubject(email)
-                .claim("userId", userId)
-                .claim("roles", roles) 
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
-                .signWith(getSigningKey(), io.jsonwebtoken.SignatureAlgorithm.HS256)
-                .compact();
-    }
+		List<String> roles = authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
 
-    public String extractEmail(String token) {
-        return extractAllClaims(token).getSubject();
-    }
+		return Jwts.builder().setSubject(email).claim("userId", userId).claim("roles", roles).setIssuedAt(new Date())
+				.setExpiration(new Date(System.currentTimeMillis() + expirationTime))
+				.signWith(getSigningKey(), SignatureAlgorithm.HS256).compact();
+	}
 
-    public Long extractUserId(String token) {
-        return extractAllClaims(token).get("userId", Long.class);
-    }
+	// NUEVO: Método para extraer los roles de forma segura
+	public List<String> extractRoles(String token) {
+		Claims claims = extractAllClaims(token);
+		Object roles = claims.get("roles");
 
-    private Claims extractAllClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-    }
-    
-    
+		if (roles instanceof List<?>) {
+			return ((List<?>) roles).stream().map(Object::toString).collect(Collectors.toList());
+		}
+		return List.of(); // Devuelve lista vacía si no hay roles
+	}
+
+	public String extractEmail(String token) {
+		return extractAllClaims(token).getSubject();
+	}
+
+	public Long extractUserId(String token) {
+		// Usamos Number para evitar errores de casteo entre Integer/Long según la
+		// librería
+		Object userId = extractAllClaims(token).get("userId");
+		if (userId instanceof Number) {
+			return ((Number) userId).longValue();
+		}
+		return null;
+	}
+
+	private Claims extractAllClaims(String token) {
+		return Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token).getBody();
+	}
 }
-
-

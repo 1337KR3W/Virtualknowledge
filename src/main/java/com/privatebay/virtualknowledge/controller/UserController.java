@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -37,33 +38,44 @@ public class UserController {
     }
 
     @PostMapping("/admin/register")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> registerByAdmin(@RequestBody Map<String, String> body) {
+    @PreAuthorize("hasRole('ADMIN')") // Usamos Authority para evitar el lío del prefijo ROLE_
+    public ResponseEntity<?> registerByAdmin(@RequestBody Map<String, Object> body) {
         try {
-            String email = body.get("email");
+            String email = (String) body.get("email");
+            String password = (String) body.get("password"); // Extraemos la password del JSON
+            String name = (String) body.get("name");
             
-            
+            // 1. Validación de existencia
             if (userService.existsByEmail(email)) {
                 return ResponseEntity.badRequest().body("Error: El email ya está registrado.");
             }
 
+            // 2. Mapeo manual a la Entidad (El estándar es usar un Mapper, pero aquí lo hacemos claro)
             User newUser = new User();
-            newUser.setName(body.get("name"));
+            newUser.setName(name);
             newUser.setEmail(email);
-            newUser.setPassword(passwordEncoder.encode(body.get("password")));
+            newUser.setPassword(passwordEncoder.encode(password)); // Encriptación vital
             newUser.setRegistrationDate(LocalDateTime.now());
             newUser.setStatus("ACTIVE");
 
-            String roleStr = body.getOrDefault("role", "ROLE_USER");
+            // 3. Manejo de Roles
+            // Angular enviará un array ["ADMIN"] o ["USER"]
+            Object rolesObj = body.get("roles");
+            String roleStr = "USER"; // Default
+            
+            if (rolesObj instanceof List && !((List<?>) rolesObj).isEmpty()) {
+                roleStr = ((List<?>) rolesObj).get(0).toString();
+            }
+
             Role userRole = roleRepository.findByName(RoleType.valueOf(roleStr))
                     .orElseThrow(() -> new RuntimeException("Error: Rol no encontrado."));
             newUser.addRole(userRole);
 
             userService.save(newUser);
 
-            return ResponseEntity.ok(Map.of("message", "Usuario creado exitosamente por el administrador"));
+            return ResponseEntity.ok(Map.of("message", "Usuario creado exitosamente"));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Error al crear usuario: " + e.getMessage());
+            return ResponseEntity.internalServerError().body("Error: " + e.getMessage());
         }
     }
 }

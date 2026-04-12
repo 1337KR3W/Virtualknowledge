@@ -92,8 +92,8 @@ INSERT INTO users (name, email, password, registration_date, status) VALUES
 ('test', 'test@gmail.com', '$2a$10$x8opSxm6b9KFg0d8dRLwwumQgCYZstq0MUM./jBOmefjtjC5QKbXu', CURRENT_TIMESTAMP, 'ACTIVE'),
 ('pepito', 'pepito@gmail.com', '$2a$10$x8opSxm6b9KFg0d8dRLwwumQgCYZstq0MUM./jBOmefjtjC5QKbXu', CURRENT_TIMESTAMP, 'ACTIVE');
 
-INSERT INTO roles (id, name) VALUES (1, 'USER');
-INSERT INTO roles (id, name) VALUES (2, 'ADMIN');
+INSERT INTO roles (id, name) VALUES (1, 'ROLE_USER');
+INSERT INTO roles (id, name) VALUES (2, 'ROLE_ADMIN');
 
 INSERT INTO user_roles (user_id, role_id) VALUES 
 (1, 1),

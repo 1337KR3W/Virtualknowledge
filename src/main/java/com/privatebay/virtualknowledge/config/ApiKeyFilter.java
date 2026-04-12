@@ -1,6 +1,8 @@
 package com.privatebay.virtualknowledge.config;
 
 import java.io.IOException;
+
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -26,6 +28,11 @@ public class ApiKeyFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
     	
+    	System.out.println("DEBUG: Entrando en ApiKeyFilter para la ruta: " + request.getServletPath());
+    	if (SecurityContextHolder.getContext().getAuthentication() != null) {
+            filterChain.doFilter(request, response);
+            return;
+        }
     	String path = request.getServletPath();
 
         if (path.startsWith("/auth/")) {
@@ -37,10 +44,11 @@ public class ApiKeyFilter extends OncePerRequestFilter {
 
         
         if (apiKeyHeader == null || apiSecretHeader == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("text/plain;charset=UTF-8");
-            response.getWriter().write("Faltan las cabeceras X-API-KEY o X-API-SECRET");
-            return;
+            //response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            //response.setContentType("text/plain;charset=UTF-8");
+            //response.getWriter().write("Faltan las cabeceras X-API-KEY o X-API-SECRET");
+        	filterChain.doFilter(request, response);
+        	return;
         }
 
         
