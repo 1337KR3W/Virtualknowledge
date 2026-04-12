@@ -36,4 +36,12 @@ public class UserService {
 
         return dto;
     }
+    
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    public User save(User user) {
+        return userRepository.save(user);
+    }
 }
