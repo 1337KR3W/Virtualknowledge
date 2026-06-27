@@ -10,9 +10,9 @@
 	</parent>
 	<groupId>com.privatebay</groupId>
 	<artifactId>Virtualknowledge</artifactId>
-	<version>0.0.1</version>
+	<version>0.1.0</version>
 	<name>virtualknowledge</name>
-	<description>Virtualknowledge is an application developed to collect all the knowledge learned about application development in Spring Boot.</description>
+	<description>The Virtual Knowledge task manager is a SaaS that provides a platform for companies to access and manage assigned projects by users.</description>
 	<url/>
 	<licenses>
 		<license/>
