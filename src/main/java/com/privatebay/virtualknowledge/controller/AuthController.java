@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -84,14 +85,16 @@ public class AuthController {
 
         String token = jwtService.generateToken(user.getEmail(), user.getId(), authorities);
 
-        return Map.of(
-            "token", token, 
-            "id", user.getId(), 
-            "name", user.getName(), 
-            "email", user.getEmail(), 
-            "roles", authorities.stream().map(SimpleGrantedAuthority::getAuthority).collect(Collectors.toList()), 
-            "status", user.getStatus()
-        );
+        // Cambiamos Map.of por un HashMap tradicional para evitar que explote si hay nulos
+        Map<String, Object> response = new HashMap<>();
+        response.put("token", token);
+        response.put("id", user.getId());
+        response.put("name", user.getName() != null ? user.getName() : "");
+        response.put("email", user.getEmail());
+        response.put("roles", authorities.stream().map(SimpleGrantedAuthority::getAuthority).collect(Collectors.toList()));
+        response.put("status", user.getStatus() != null ? user.getStatus() : "ACTIVE");
+
+        return response;
     }
 
 }

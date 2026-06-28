@@ -78,4 +78,11 @@ public class UserController {
             return ResponseEntity.internalServerError().body("Error: " + e.getMessage());
         }
     }
+    
+    @GetMapping("/admin/department/{departmentId}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<List<User>> getUsersByDepartment(@PathVariable Long departmentId) {
+        // Retorna la lista de usuarios asociados a ese ID de departamento
+        return ResponseEntity.ok(userService.findByDepartmentId(departmentId));
+    }
 }

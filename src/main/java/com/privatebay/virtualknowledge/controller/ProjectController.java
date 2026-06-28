@@ -1,6 +1,7 @@
 package com.privatebay.virtualknowledge.controller;
 
 import com.privatebay.virtualknowledge.dto.ProjectDTO;
+import com.privatebay.virtualknowledge.entity.Project;
 import com.privatebay.virtualknowledge.service.ProjectService;
 import com.privatebay.virtualknowledge.service.SecurityService;
 
@@ -37,5 +38,18 @@ public class ProjectController {
         Long userId = securityService.getCurrentUserId();
         List<ProjectDTO> projects = projectService.getProjectsForWeek(userId, weekId);
         return ResponseEntity.ok(projects);
+    }
+    
+    @PostMapping("/admin/create")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<?> createProjectByAdmin(@RequestBody Project project) {
+        try {
+            Project newProject = projectService.createProject(project);
+            return ResponseEntity.ok(newProject);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage()); // Captura el error de departamentos cruzados
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error: " + e.getMessage());
+        }
     }
 }
