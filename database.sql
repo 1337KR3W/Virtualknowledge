@@ -57,6 +57,8 @@ CREATE TABLE IF NOT EXISTS timesheets (
     work_date DATE NOT NULL,
     hours DECIMAL(4,2) NOT NULL,
     comment TEXT,
+    global_comment TEXT NULL,
+    week_id VARCHAR(10) NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_ts_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,

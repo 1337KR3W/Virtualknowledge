@@ -28,6 +28,12 @@ public class TimeSheet {
 
 	@Column(columnDefinition = "TEXT")
 	private String comment;
+	
+	@Column(name = "global_comment", columnDefinition = "TEXT")
+	private String globalComment;
+
+	@Column(name = "week_id", length = 10)
+	private String weekId;
 
 	public TimeSheet() {
 	}
@@ -84,5 +90,21 @@ public class TimeSheet {
 
 	public void setComment(String comment) {
 		this.comment = comment;
+	}
+	
+	public String getGlobalComment() {
+		return globalComment;
+	}
+
+	public void setGlobalComment(String globalComment) {
+		this.globalComment = globalComment;
+	}
+
+	public String getWeekId() {
+		return weekId;
+	}
+
+	public void setWeekId(String weekId) {
+		this.weekId = weekId;
 	}
 }
