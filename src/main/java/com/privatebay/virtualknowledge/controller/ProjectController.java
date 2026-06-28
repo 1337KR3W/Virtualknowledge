@@ -5,6 +5,7 @@ import com.privatebay.virtualknowledge.entity.Project;
 import com.privatebay.virtualknowledge.service.ProjectService;
 import com.privatebay.virtualknowledge.service.SecurityService;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize; // Importante
 import org.springframework.web.bind.annotation.*;
