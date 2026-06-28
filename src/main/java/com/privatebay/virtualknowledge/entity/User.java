@@ -48,6 +48,10 @@ public class User {
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Project> projects;
 
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "user_departments", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "department_id"))
+	private Set<Department> departments = new HashSet<>();
+
 	public User() {
 	}
 
@@ -120,6 +124,14 @@ public class User {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public Set<Department> getDepartments() {
+		return departments;
+	}
+
+	public void setDepartments(Set<Department> departments) {
+		this.departments = departments;
 	}
 
 }

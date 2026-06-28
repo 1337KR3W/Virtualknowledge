@@ -37,6 +37,11 @@ public class Project {
 	@JsonIgnore
 	private User user;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "department_id", nullable = false)
+	@JsonIgnore
+	private Department department;
+
 	public Project() {
 
 	}
@@ -92,6 +97,14 @@ public class Project {
 
 	public void setEndDate(LocalDate endDate) {
 		this.endDate = endDate;
+	}
+
+	public Department getDepartment() {
+		return department;
+	}
+
+	public void setDepartment(Department department) {
+		this.department = department;
 	}
 
 }

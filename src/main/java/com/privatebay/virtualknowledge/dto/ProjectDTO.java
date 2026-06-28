@@ -8,13 +8,18 @@ public class ProjectDTO {
 	private String description;
 	private LocalDate startDate;
 	private LocalDate endDate;
+	private Long departmentId;
+	private String departmentName;
 
-	public ProjectDTO(Long id, String name, String description, LocalDate startDate, LocalDate endDate) {
+	public ProjectDTO(Long id, String name, String description, LocalDate startDate, LocalDate endDate,
+			Long departmentId, String departmentName) {
 		this.id = id;
 		this.name = name;
 		this.description = description;
 		this.startDate = startDate;
 		this.endDate = endDate;
+		this.departmentId = departmentId;
+		this.departmentName = departmentName;
 	}
 
 	public Long getId() {
@@ -35,6 +40,14 @@ public class ProjectDTO {
 
 	public LocalDate getEndDate() {
 		return endDate;
+	}
+
+	public Long getDepartmentId() {
+		return departmentId;
+	}
+
+	public String getDepartmentName() {
+		return departmentName;
 	}
 
 	public void setEndDate(LocalDate endDate) {
