@@ -24,32 +24,27 @@ public class TimeSheetService {
     private ProjectRepository projectRepository;
 
     public TimeSheetRequestDTO getTimeSheetByWeek(Long userId, String weekId) {
-
         LocalDate monday = LocalDate.parse(weekId + "-1", DateTimeFormatter.ISO_WEEK_DATE);
         LocalDate sunday = monday.plusDays(6);
 
         List<TimeSheet> entries = timeSheetRepository.findByUserIdAndWorkDateBetween(userId, monday, sunday);
+        System.out.println("DEBUG: Semana buscada: " + weekId);
+        System.out.println("DEBUG: Fechas calculadas -> Lunes: " + monday + " Domingo: " + sunday);
+        System.out.println("DEBUG: Entradas totales encontradas: " + entries.size());
+        
+        // 🔍 DEPURACIÓN 1: Ver si la base de datos nos devuelve registros
+        System.out.println("DEBUG: Registros encontrados en BD para la semana: " + entries.size());
 
         Map<Long, ProjectTimeRowDTO> rowsMap = new HashMap<>();
         String globalCommentExtracted = "";
 
         for (TimeSheet ts : entries) {
-            
-            if (ts.getGlobalComment() != null && globalCommentExtracted.isEmpty()) {
-                globalCommentExtracted = ts.getGlobalComment();
+            if (ts.getGlobalComment() != null && !ts.getGlobalComment().trim().isEmpty() && globalCommentExtracted.isEmpty()) {
+                globalCommentExtracted = ts.getGlobalComment().trim();
+                // 🔍 DEPURACIÓN 2: Ver si encontramos el comentario en el bucle
+                System.out.println("DEBUG: ¡Comentario Global encontrado en bucle!: " + globalCommentExtracted);
             }
-
-            Long pid = ts.getProject().getId();
-            ProjectTimeRowDTO row = rowsMap.computeIfAbsent(pid, k -> {
-                ProjectTimeRowDTO newRow = new ProjectTimeRowDTO();
-                newRow.setPid(pid);
-                newRow.setProjectName(ts.getProject().getName());
-                newRow.setDays(new HashMap<>());
-                return newRow;
-            });
-
-            String dayKey = ts.getWorkDate().getDayOfWeek().name().substring(0, 3).toLowerCase();
-            row.getDays().put(dayKey, new TimeEntryDTO(ts.getHours(), ts.getComment()));
+            // ... resto de tu código del bucle ...
         }
 
         TimeSheetRequestDTO response = new TimeSheetRequestDTO();
@@ -57,6 +52,9 @@ public class TimeSheetService {
         response.setUserId(userId);
         response.setGlobalComment(globalCommentExtracted);
         response.setRows(new ArrayList<>(rowsMap.values()));
+        
+        // 🔍 DEPURACIÓN 3: Ver qué sale finalmente hacia la API
+        System.out.println("DEBUG: Enviando al Front-End -> GlobalComment: [" + response.getGlobalComment() + "]");
         
         return response;
     }

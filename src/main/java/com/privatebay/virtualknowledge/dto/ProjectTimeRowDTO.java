@@ -6,16 +6,18 @@ public class ProjectTimeRowDTO {
 
 	private Long pid;
 	private String projectName;
+	private String departmentName; // <-- Añadimos el nuevo campo para capturar el valor del Front
 	private Map<String, TimeEntryDTO> days;
 
 	public ProjectTimeRowDTO() {
 		super();
 	}
 
-	public ProjectTimeRowDTO(Long pid, String projectName, Map<String, TimeEntryDTO> days) {
+	public ProjectTimeRowDTO(Long pid, String projectName, String departmentName, Map<String, TimeEntryDTO> days) {
 		super();
 		this.pid = pid;
 		this.projectName = projectName;
+		this.departmentName = departmentName;
 		this.days = days;
 	}
 
@@ -33,6 +35,14 @@ public class ProjectTimeRowDTO {
 
 	public void setProjectName(String projectName) {
 		this.projectName = projectName;
+	}
+
+	public String getDepartmentName() {
+		return departmentName;
+	}
+
+	public void setDepartmentName(String departmentName) {
+		this.departmentName = departmentName;
 	}
 
 	public Map<String, TimeEntryDTO> getDays() {

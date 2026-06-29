@@ -3,8 +3,10 @@ package com.privatebay.virtualknowledge.service;
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.HashMap;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
@@ -17,151 +19,213 @@ import com.privatebay.virtualknowledge.dto.TimeSheetRequestDTO;
 @Service
 public class PdfGeneratorService {
 
-    private static final String[] DAYS = {"mon", "tue", "wed", "thu", "fri", "sat", "sun"};
-    private static final String[] HEADERS = {"Project", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun", "Total"};
+	private static final String[] DAYS = { "sun", "mon", "tue", "wed", "thu", "fri", "sat" };
+	private static final String[] HEADERS = { "Project", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Total" };
 
-    public byte[] generateWeeklyReport(TimeSheetRequestDTO data, String username) {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        Document document = new Document(PageSize.A4, 36, 36, 54, 36);
-        PdfWriter.getInstance(document, out);
+	private static final Map<String, String> DAY_LABELS = Map.of("sun", "Sunday", "mon", "Monday", "tue", "Tuesday",
+			"wed", "Wednesday", "thu", "Thursday", "fri", "Friday", "sat", "Saturday");
 
-        document.open();
+	public byte[] generateWeeklyReport(TimeSheetRequestDTO data, String username) {
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		Document document = new Document(PageSize.A4, 36, 36, 54, 36);
+		PdfWriter.getInstance(document, out);
 
-        // --- Fuentes ---
-        Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 22, Color.DARK_GRAY);
-        Font subTitleFont = FontFactory.getFont(FontFactory.HELVETICA, 10, Color.GRAY);
-        Font sectionFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, Color.DARK_GRAY);
-        Font bodyFont = FontFactory.getFont(FontFactory.HELVETICA, 9, Color.BLACK);
-        Font boldBodyFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9, Color.BLACK);
+		document.open();
 
-        // --- Cabecera ---
-        Paragraph title = new Paragraph("VIRTUAL KNOWLEDGE", titleFont);
-        title.setSpacingAfter(4);
-        document.add(title);
+		// --- Fuentes ---
+		Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 22, Color.DARK_GRAY);
+		Font subTitleFont = FontFactory.getFont(FontFactory.HELVETICA, 10, Color.GRAY);
+		Font sectionFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, Color.DARK_GRAY);
+		Font bodyFont = FontFactory.getFont(FontFactory.HELVETICA, 9, Color.BLACK);
+		Font boldBodyFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9, Color.BLACK);
+		Font deptFont = FontFactory.getFont(FontFactory.HELVETICA, 7, Color.GRAY);
+		Font subHeaderFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 7, Color.WHITE);
 
-        Paragraph sub = new Paragraph("Weekly Timesheet Report | Week: " + data.getWeekId() + " | Professional: " + username, subTitleFont);
-        sub.setSpacingAfter(24);
-        document.add(sub);
+		// --- Cabecera ---
+		Paragraph title = new Paragraph("VIRTUAL KNOWLEDGE", titleFont);
+		title.setSpacingAfter(4);
+		document.add(title);
 
-        // --- Cálculo de Métricas ---
-        BigDecimal totalHours = BigDecimal.ZERO;
-        Map<String, BigDecimal> projectTotals = new HashMap<>();
-        int activeDaysCount = 0;
-        BigDecimal[] dailyTotals = new BigDecimal[7];
-        for (int i = 0; i < 7; i++) dailyTotals[i] = BigDecimal.ZERO;
+		Paragraph sub = new Paragraph(
+				"Weekly Timesheet Report | Week: " + data.getWeekId() + " | Professional: " + username, subTitleFont);
+		sub.setSpacingAfter(24);
+		document.add(sub);
 
-        for (ProjectTimeRowDTO row : data.getRows()) {
-            BigDecimal rowTotal = BigDecimal.ZERO;
-            for (int i = 0; i < 7; i++) {
-                var entry = row.getDays().get(DAYS[i]);
-                if (entry != null && entry.getHours() != null) {
-                    BigDecimal hr = entry.getHours();
-                    rowTotal = rowTotal.add(hr);
-                    dailyTotals[i] = dailyTotals[i].add(hr);
-                }
-            }
-            totalHours = totalHours.add(rowTotal);
-            projectTotals.put(row.getProjectName(), rowTotal);
-        }
+		// --- Cálculo de fechas dinámicas ---
+		String[] calculatedDates = calculateWeekDates(data.getWeekId());
 
-        for (BigDecimal dayTotal : dailyTotals) {
-            if (dayTotal.compareTo(BigDecimal.ZERO) > 0) activeDaysCount++;
-        }
+		// --- Tabla de Tiempos Principal ---
+		document.add(new Paragraph("Time Breakdown", sectionFont));
+		Paragraph space = new Paragraph("");
+		space.setSpacingAfter(8);
+		document.add(space);
 
-        String topProject = projectTotals.entrySet().stream()
-                .max(Map.Entry.comparingByValue())
-                .map(Map.Entry::getKey)
-                .orElse("N/A");
+		PdfPTable mainTable = new PdfPTable(9);
+		mainTable.setWidthPercentage(100);
+		mainTable.setWidths(new float[] { 2.5f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1.2f });
+		mainTable.setSplitRows(true);
 
-        BigDecimal avgHours = activeDaysCount > 0 
-                ? totalHours.divide(BigDecimal.valueOf(activeDaysCount), 2, RoundingMode.HALF_UP) 
-                : BigDecimal.ZERO;
+		Color corporateBlue = new Color(41, 128, 185);
+		Color borderColor = new Color(180, 180, 180); // Un gris uniforme/limpio (o Color.BLACK si la quieres muy marcada)
 
-        // --- Bloque Visual de Métricas (KPIs) ---
-        PdfPTable kpiTable = new PdfPTable(3);
-        kpiTable.setWidthPercentage(100);
-        kpiTable.setSpacingAfter(20);
+		// --- FILA HEADER 1 ---
+		for (String h : HEADERS) {
+			PdfPCell cell = new PdfPCell(
+					new Phrase(h, FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9, Color.WHITE)));
+			cell.setBackgroundColor(corporateBlue);
+			cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+			cell.setPadding(4);
+			cell.setBorderColor(borderColor);
 
-        kpiTable.addCell(createKpiCell("TOTAL HOURS", totalHours.toString() + " hrs", boldBodyFont, bodyFont));
-        kpiTable.addCell(createKpiCell("TOP PROJECT", topProject, boldBodyFont, bodyFont));
-        kpiTable.addCell(createKpiCell("DAILY AVERAGE", avgHours.toString() + " hrs/day", boldBodyFont, bodyFont));
-        document.add(kpiTable);
+			if (h.equals("Total")) {
+				cell.setRowspan(2);
+				cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+				cell.setPadding(6);
+			} else {
+				cell.setBorderWidthBottom(0); // Remueve la base para acoplar la fila 2 de forma fluida
+			}
+			mainTable.addCell(cell);
+		}
 
-        // --- Tabla de Tiempos Principal ---
-        document.add(new Paragraph("Time Breakdown", sectionFont));
-        Paragraph space = new Paragraph(""); space.setSpacingAfter(8); document.add(space);
+		// --- FILA HEADER 2 ---
+		PdfPCell deptHeaderCell = new PdfPCell(
+				new Phrase("Departments", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 7, Color.WHITE)));
+		deptHeaderCell.setBackgroundColor(corporateBlue);
+		deptHeaderCell.setHorizontalAlignment(Element.ALIGN_LEFT);
+		deptHeaderCell.setPaddingLeft(6);
+		deptHeaderCell.setPaddingBottom(4);
+		deptHeaderCell.setBorderColor(borderColor);
+		deptHeaderCell.setBorderWidthTop(0); 
+		mainTable.addCell(deptHeaderCell);
 
-        PdfPTable mainTable = new PdfPTable(9);
-        mainTable.setWidthPercentage(100);
-        mainTable.setWidths(new float[]{2.5f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1.2f});
+		for (String dateStr : calculatedDates) {
+			PdfPCell dateCell = new PdfPCell(new Phrase(dateStr, subHeaderFont));
+			dateCell.setBackgroundColor(corporateBlue);
+			dateCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+			dateCell.setPaddingBottom(4);
+			dateCell.setBorderColor(borderColor);
+			dateCell.setBorderWidthTop(0); 
+			mainTable.addCell(dateCell);
+		}
 
-        // Estilar Cabecera de la Tabla
-        for (String h : HEADERS) {
-            PdfPCell cell = new PdfPCell(new Phrase(h, FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9, Color.WHITE)));
-            cell.setBackgroundColor(new Color(41, 128, 185)); // Azul corporativo
-            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-            cell.setPadding(6);
-            mainTable.addCell(cell);
-        }
+		// --- Renderizar Filas de Datos ---
+		for (ProjectTimeRowDTO row : data.getRows()) {
+			Phrase projectPhrase = new Phrase();
+			projectPhrase.add(new Chunk(row.getProjectName(), bodyFont));
 
-        // Renderizar Filas de Datos
-        for (ProjectTimeRowDTO row : data.getRows()) {
-            mainTable.addCell(new PdfPCell(new Phrase(row.getProjectName(), bodyFont)));
-            BigDecimal rowTotal = BigDecimal.ZERO;
+			String department = (row.getDepartmentName() != null && !row.getDepartmentName().isEmpty())
+					? row.getDepartmentName()
+					: "General";
 
-            for (String day : DAYS) {
-                var entry = row.getDays().get(day);
-                BigDecimal hr = (entry != null && entry.getHours() != null) ? entry.getHours() : BigDecimal.ZERO;
-                rowTotal = rowTotal.add(hr);
-                
-                PdfPCell cell = new PdfPCell(new Phrase(hr.compareTo(BigDecimal.ZERO) == 0 ? "-" : hr.toString(), bodyFont));
-                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                mainTable.addCell(cell);
-            }
+			projectPhrase.add(new Chunk("\n" + department, deptFont));
 
-            PdfPCell totalCell = new PdfPCell(new Phrase(rowTotal.toString(), boldBodyFont));
-            totalCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-            totalCell.setBackgroundColor(new Color(245, 247, 250));
-            mainTable.addCell(totalCell);
-        }
-        document.add(mainTable);
+			PdfPCell pCell = new PdfPCell(projectPhrase);
+			pCell.setHorizontalAlignment(Element.ALIGN_LEFT);
+			pCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+			pCell.setPadding(6);
+			pCell.setBorderColor(borderColor); // Forzamos borde idéntico a los headers
+			mainTable.addCell(pCell);
 
-        // --- Comentario Global (Pie de página / Cierre) ---
-        if (data.getGlobalComment() != null && !data.getGlobalComment().trim().isEmpty()) {
-            Paragraph commTitle = new Paragraph("Weekly Global Comments", sectionFont);
-            commTitle.setSpacingBefore(20);
-            commTitle.setSpacingAfter(6);
-            document.add(commTitle);
+			BigDecimal rowTotal = BigDecimal.ZERO;
 
-            PdfPTable commTable = new PdfPTable(1);
-            commTable.setWidthPercentage(100);
-            PdfPCell commCell = new PdfPCell(new Paragraph(data.getGlobalComment(), bodyFont));
-            commCell.setPadding(10);
-            commCell.setBackgroundColor(new Color(250, 250, 250));
-            commCell.setBorderColor(new Color(220, 224, 230));
-            commTable.addCell(commCell);
-            document.add(commTable);
-        }
+			for (String day : DAYS) {
+				var entry = row.getDays().get(day);
+				BigDecimal hr = (entry != null && entry.getHours() != null) ? entry.getHours() : BigDecimal.ZERO;
+				rowTotal = rowTotal.add(hr);
 
-        document.close();
-        return out.toByteArray();
-    }
+				PdfPCell cell = new PdfPCell(
+						new Phrase(hr.compareTo(BigDecimal.ZERO) == 0 ? "-" : hr.toString(), bodyFont));
+				cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+				cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+				cell.setBorderColor(borderColor); // Forzamos borde idéntico a los headers
+				mainTable.addCell(cell);
+			}
 
-    private PdfPCell createKpiCell(String title, String value, Font titleFont, Font valueFont) {
-        PdfPCell cell = new PdfPCell();
-        cell.setPadding(10);
-        cell.setBackgroundColor(new Color(248, 249, 250));
-        cell.setBorderColor(new Color(233, 236, 239));
-        
-        Paragraph p1 = new Paragraph(title, FontFactory.getFont(FontFactory.HELVETICA_BOLD, 7, Color.GRAY));
-        p1.setAlignment(Element.ALIGN_CENTER);
-        cell.addElement(p1);
-        
-        Paragraph p2 = new Paragraph(value, FontFactory.getFont(FontFactory.HELVETICA_BOLD, 11, Color.DARK_GRAY));
-        p2.setAlignment(Element.ALIGN_CENTER);
-        p2.setSpacingBefore(4);
-        cell.addElement(p2);
-        
-        return cell;
-    }
+			PdfPCell totalCell = new PdfPCell(new Phrase(rowTotal.toString() + "h", boldBodyFont));
+			totalCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+			totalCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+			totalCell.setBackgroundColor(new Color(245, 247, 250));
+			totalCell.setBorderColor(borderColor); // Forzamos borde idéntico a los headers
+			mainTable.addCell(totalCell);
+		}
+		document.add(mainTable);
+
+		// --- Listado de Comentarios Diarios ---
+		boolean hasDailyComments = false;
+		java.util.List<Paragraph> dailyCommentsList = new java.util.ArrayList<>();
+
+		for (ProjectTimeRowDTO row : data.getRows()) {
+			if (row.getDays() == null)
+				continue;
+
+			for (String day : DAYS) {
+				var entry = row.getDays().get(day);
+				if (entry != null && entry.getComment() != null && !entry.getComment().trim().isEmpty()) {
+					hasDailyComments = true;
+					String labelDay = DAY_LABELS.getOrDefault(day, day.toUpperCase());
+					String textFormat = String.format("•  %s - %s: %s", row.getProjectName(), labelDay,
+							entry.getComment().trim());
+
+					Paragraph pComment = new Paragraph(textFormat, bodyFont);
+					pComment.setIndentationLeft(12);
+					pComment.setSpacingAfter(3);
+					dailyCommentsList.add(pComment);
+				}
+			}
+		}
+
+		if (hasDailyComments) {
+			Paragraph dailyCommTitle = new Paragraph("Daily Project Comments", sectionFont);
+			dailyCommTitle.setSpacingBefore(20);
+			dailyCommTitle.setSpacingAfter(8);
+			document.add(dailyCommTitle);
+
+			for (Paragraph p : dailyCommentsList) {
+				document.add(p);
+			}
+		}
+
+		// --- Comentario Global ---
+		if (data.getGlobalComment() != null && !data.getGlobalComment().trim().isEmpty()) {
+			Paragraph commTitle = new Paragraph("Weekly Global Comment", sectionFont);
+			commTitle.setSpacingBefore(20);
+			commTitle.setSpacingAfter(6);
+			document.add(commTitle);
+
+			PdfPTable commTable = new PdfPTable(1);
+			commTable.setWidthPercentage(100);
+			PdfPCell commCell = new PdfPCell(new Paragraph(data.getGlobalComment(), bodyFont));
+			commCell.setPadding(10);
+			commCell.setBackgroundColor(new Color(250, 250, 250));
+			commCell.setBorderColor(new Color(220, 224, 230));
+			commTable.addCell(commCell);
+			document.add(commTable);
+		}
+
+		document.close();
+		return out.toByteArray();
+	}
+
+	private String[] calculateWeekDates(String weekId) {
+		String[] dates = new String[7];
+		try {
+			String[] parts = weekId.split("-W");
+			int year = Integer.parseInt(parts[0]);
+			int week = Integer.parseInt(parts[1]);
+
+			LocalDate monday = LocalDate.of(year, 1, 1).with(TemporalAdjusters.firstInMonth(DayOfWeek.MONDAY))
+					.plusWeeks(week - 1);
+
+			LocalDate current = monday.minusDays(1);
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+
+			for (int i = 0; i < 7; i++) {
+				dates[i] = current.format(formatter);
+				current = current.plusDays(1);
+			}
+		} catch (Exception e) {
+			java.util.Arrays.fill(dates, "----/--/--");
+		}
+		return dates;
+	}
 }

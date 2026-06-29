@@ -32,14 +32,14 @@ public class PdfController {
             Long userId = securityService.getCurrentUserId();
             String username = securityService.getCurrentUser().getName(); 
 
-            // Consumimos el servicio de negocio para obtener los datos de la semana
+            // 1. Consumimos el servicio de negocio para obtener los datos de la semana (Ya incluye departamentos)
             TimeSheetRequestDTO data = timeSheetService.getTimeSheetByWeek(userId, weekId);
             
             if (data == null || data.getRows() == null || data.getRows().isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
             }
 
-            // Delegamos la renderización al servicio especializado de PDF
+            // 2. Delegamos la renderización al servicio especializado de PDF
             byte[] pdfBytes = pdfGeneratorService.generateWeeklyReport(data, username);
 
             HttpHeaders headers = new HttpHeaders();
@@ -49,6 +49,7 @@ public class PdfController {
 
             return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
         } catch (Exception e) {
+            e.printStackTrace(); // Muestra el error exacto en la consola si algo falla
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
