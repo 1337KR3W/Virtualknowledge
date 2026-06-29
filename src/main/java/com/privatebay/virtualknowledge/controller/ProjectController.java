@@ -25,7 +25,7 @@ public class ProjectController {
     }
 
     @GetMapping("/my-projects")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')") // Verificamos el rol que viene en tu token
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<List<ProjectDTO>> getAllProjects() {
         Long userId = securityService.getCurrentUserId();
         List<ProjectDTO> projects = projectService.findProjectsByUserId(userId);
@@ -33,9 +33,9 @@ public class ProjectController {
     }
 
     @GetMapping("/my-projects/week/{weekId}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')") // Verificamos el rol aquí también
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<List<ProjectDTO>> getProjectsByWeek(@PathVariable String weekId) {
-        // Si el flujo llega aquí, garantizamos que hay un usuario autenticado con ese rol
+        
         Long userId = securityService.getCurrentUserId();
         List<ProjectDTO> projects = projectService.getProjectsForWeek(userId, weekId);
         return ResponseEntity.ok(projects);
@@ -48,7 +48,7 @@ public class ProjectController {
             Project newProject = projectService.createProject(project);
             return ResponseEntity.ok(newProject);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage()); // Captura el error de departamentos cruzados
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Error: " + e.getMessage());
         }

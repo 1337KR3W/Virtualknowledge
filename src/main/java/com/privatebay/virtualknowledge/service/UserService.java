@@ -10,42 +10,40 @@ import java.util.List;
 
 @Service
 public class UserService {
-	
-    private final UserRepository userRepository;
-	
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
-    @Transactional(readOnly = true)
-    public UserDTO findById(Long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+	private final UserRepository userRepository;
 
-        UserDTO dto = new UserDTO();
-        dto.setId(user.getId());
-        dto.setName(user.getName());
-        dto.setEmail(user.getEmail());
-        dto.setStatus(user.getStatus());
-        
-        List<String> rolesNames = user.getRoles().stream()
-                .map(role -> role.getName().name())
-                .collect(Collectors.toList());
-        
-        dto.setRoles(rolesNames); 
+	public UserService(UserRepository userRepository) {
+		this.userRepository = userRepository;
+	}
 
-        return dto;
-    }
-    
-    public boolean existsByEmail(String email) {
-        return userRepository.existsByEmail(email);
-    }
-    
-    public List<User> findByDepartmentId(Long departmentId) {
-        return userRepository.findByDepartments_Id(departmentId);
-    }
+	@Transactional(readOnly = true)
+	public UserDTO findById(Long id) {
+		User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-    public User save(User user) {
-        return userRepository.save(user);
-    }
+		UserDTO dto = new UserDTO();
+		dto.setId(user.getId());
+		dto.setName(user.getName());
+		dto.setEmail(user.getEmail());
+		dto.setStatus(user.getStatus());
+
+		List<String> rolesNames = user.getRoles().stream().map(role -> role.getName().name())
+				.collect(Collectors.toList());
+
+		dto.setRoles(rolesNames);
+
+		return dto;
+	}
+
+	public boolean existsByEmail(String email) {
+		return userRepository.existsByEmail(email);
+	}
+
+	public List<User> findByDepartmentId(Long departmentId) {
+		return userRepository.findByDepartments_Id(departmentId);
+	}
+
+	public User save(User user) {
+		return userRepository.save(user);
+	}
 }

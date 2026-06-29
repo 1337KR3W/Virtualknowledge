@@ -22,59 +22,50 @@ import java.util.stream.Collectors;
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-    private final JwtService jwtService;
-    private final UserDetailsService userDetailsService;
+	private final JwtService jwtService;
+	private final UserDetailsService userDetailsService;
 
-    public JwtAuthFilter(JwtService jwtService, @Lazy UserDetailsService userDetailsService) {
-        this.jwtService = jwtService;
-        this.userDetailsService = userDetailsService;
-    }
+	public JwtAuthFilter(JwtService jwtService, @Lazy UserDetailsService userDetailsService) {
+		this.jwtService = jwtService;
+		this.userDetailsService = userDetailsService;
+	}
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
+	@Override
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+			throws ServletException, IOException {
 
-        final String authHeader = request.getHeader("Authorization");
-        final String jwt;
-        final String userEmail;
+		final String authHeader = request.getHeader("Authorization");
+		final String jwt;
+		final String userEmail;
 
-        // 1. Si no hay cabecera o no empieza por Bearer, seguimos la cadena
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+		if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+			filterChain.doFilter(request, response);
+			return;
+		}
 
-        jwt = authHeader.substring(7);
-        try {
-            userEmail = jwtService.extractEmail(jwt);
+		jwt = authHeader.substring(7);
+		try {
+			userEmail = jwtService.extractEmail(jwt);
 
-            // 2. Si hay email y no estamos autenticados ya en este hilo
-            if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
-                
-                // 3. ¡Punto clave! Extraemos los roles del TOKEN (donde ya sabemos que están)
-                List<String> roles = jwtService.extractRoles(jwt);
-                List<SimpleGrantedAuthority> authorities = roles.stream()
-                        .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
+			if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+				UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
 
-                // 4. Creamos la autenticación con las authorities del TOKEN
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        authorities 
-                );
+				List<String> roles = jwtService.extractRoles(jwt);
+				List<SimpleGrantedAuthority> authorities = roles.stream().map(SimpleGrantedAuthority::new)
+						.collect(Collectors.toList());
 
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                
-                // 5. Establecemos la autenticación en el contexto
-                SecurityContextHolder.getContext().setAuthentication(authToken);
-            }
-        } catch (Exception e) {
-            // Si el token es inválido o expiró, simplemente no autenticamos
-            logger.error("No se pudo establecer la autenticación de usuario", e);
-        }
+				UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails,
+						null, authorities);
 
-        filterChain.doFilter(request, response);
-    }
+				authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+				SecurityContextHolder.getContext().setAuthentication(authToken);
+			}
+		} catch (Exception e) {
+
+			logger.error("No se pudo establecer la autenticación de usuario", e);
+		}
+
+		filterChain.doFilter(request, response);
+	}
 }

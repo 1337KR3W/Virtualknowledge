@@ -37,7 +37,6 @@ public class JwtService {
 				.signWith(getSigningKey(), SignatureAlgorithm.HS256).compact();
 	}
 
-	// NUEVO: Método para extraer los roles de forma segura
 	public List<String> extractRoles(String token) {
 		Claims claims = extractAllClaims(token);
 		Object roles = claims.get("roles");
@@ -45,7 +44,7 @@ public class JwtService {
 		if (roles instanceof List<?>) {
 			return ((List<?>) roles).stream().map(Object::toString).collect(Collectors.toList());
 		}
-		return List.of(); // Devuelve lista vacía si no hay roles
+		return List.of();
 	}
 
 	public String extractEmail(String token) {
@@ -53,8 +52,7 @@ public class JwtService {
 	}
 
 	public Long extractUserId(String token) {
-		// Usamos Number para evitar errores de casteo entre Integer/Long según la
-		// librería
+
 		Object userId = extractAllClaims(token).get("userId");
 		if (userId instanceof Number) {
 			return ((Number) userId).longValue();

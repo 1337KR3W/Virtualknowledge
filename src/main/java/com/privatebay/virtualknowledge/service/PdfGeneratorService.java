@@ -29,7 +29,6 @@ public class PdfGeneratorService {
 
 		document.open();
 
-		// --- Fuentes ---
 		Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 22, Color.DARK_GRAY);
 		Font subTitleFont = FontFactory.getFont(FontFactory.HELVETICA, 10, Color.GRAY);
 		Font sectionFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, Color.DARK_GRAY);
@@ -38,7 +37,6 @@ public class PdfGeneratorService {
 		Font deptFont = FontFactory.getFont(FontFactory.HELVETICA, 7, Color.GRAY);
 		Font subHeaderFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 7, Color.WHITE);
 
-		// --- Cabecera ---
 		Paragraph title = new Paragraph("VIRTUAL KNOWLEDGE", titleFont);
 		title.setSpacingAfter(4);
 		document.add(title);
@@ -48,10 +46,8 @@ public class PdfGeneratorService {
 		sub.setSpacingAfter(24);
 		document.add(sub);
 
-		// --- Cálculo de fechas dinámicas ---
 		String[] calculatedDates = calculateWeekDates(data.getWeekId());
 
-		// --- Cálculo de KPIs ---
 		double totalHours = 0;
 		String topProject = "N/A";
 		double maxHours = -1;
@@ -66,7 +62,6 @@ public class PdfGeneratorService {
 			}
 			totalHours += rowTotal;
 
-			// Lógica para el Top Project
 			if (rowTotal > maxHours) {
 				maxHours = rowTotal;
 				topProject = row.getProjectName();
@@ -75,12 +70,10 @@ public class PdfGeneratorService {
 
 		double dailyAverage = (totalHours > 0) ? (totalHours / 7.0) : 0;
 
-		// --- Tabla de KPIs ---
 		PdfPTable kpiTable = new PdfPTable(3);
 		kpiTable.setWidthPercentage(100);
 		kpiTable.setSpacingAfter(20);
 
-		// Estilo de tarjeta (fondo gris muy claro y borde fino)
 		Color cardBg = new Color(248, 249, 250);
 		Color cardBorder = new Color(220, 224, 230);
 
@@ -90,7 +83,6 @@ public class PdfGeneratorService {
 
 		document.add(kpiTable);
 
-		// --- Tabla de Tiempos Principal ---
 		document.add(new Paragraph("Time Breakdown", sectionFont));
 		Paragraph space = new Paragraph("");
 		space.setSpacingAfter(8);
@@ -102,10 +94,8 @@ public class PdfGeneratorService {
 		mainTable.setSplitRows(true);
 
 		Color corporateBlue = new Color(41, 128, 185);
-		Color borderColor = new Color(180, 180, 180); // Un gris uniforme/limpio (o Color.BLACK si la quieres muy
-														// marcada)
+		Color borderColor = new Color(180, 180, 180);
 
-		// --- FILA HEADER 1 ---
 		for (String h : HEADERS) {
 			PdfPCell cell = new PdfPCell(
 					new Phrase(h, FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9, Color.WHITE)));
@@ -119,12 +109,11 @@ public class PdfGeneratorService {
 				cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
 				cell.setPadding(6);
 			} else {
-				cell.setBorderWidthBottom(0); // Remueve la base para acoplar la fila 2 de forma fluida
+				cell.setBorderWidthBottom(0);
 			}
 			mainTable.addCell(cell);
 		}
 
-		// --- FILA HEADER 2 ---
 		PdfPCell deptHeaderCell = new PdfPCell(
 				new Phrase("Departments", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 7, Color.WHITE)));
 		deptHeaderCell.setBackgroundColor(corporateBlue);
@@ -145,7 +134,6 @@ public class PdfGeneratorService {
 			mainTable.addCell(dateCell);
 		}
 
-		// --- Renderizar Filas de Datos ---
 		for (ProjectTimeRowDTO row : data.getRows()) {
 			Phrase projectPhrase = new Phrase();
 			projectPhrase.add(new Chunk(row.getProjectName(), bodyFont));
@@ -160,7 +148,7 @@ public class PdfGeneratorService {
 			pCell.setHorizontalAlignment(Element.ALIGN_LEFT);
 			pCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
 			pCell.setPadding(6);
-			pCell.setBorderColor(borderColor); // Forzamos borde idéntico a los headers
+			pCell.setBorderColor(borderColor);
 			mainTable.addCell(pCell);
 
 			BigDecimal rowTotal = BigDecimal.ZERO;
@@ -174,7 +162,7 @@ public class PdfGeneratorService {
 						new Phrase(hr.compareTo(BigDecimal.ZERO) == 0 ? "-" : hr.toString(), bodyFont));
 				cell.setHorizontalAlignment(Element.ALIGN_CENTER);
 				cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-				cell.setBorderColor(borderColor); // Forzamos borde idéntico a los headers
+				cell.setBorderColor(borderColor);
 				mainTable.addCell(cell);
 			}
 
@@ -182,12 +170,11 @@ public class PdfGeneratorService {
 			totalCell.setHorizontalAlignment(Element.ALIGN_CENTER);
 			totalCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
 			totalCell.setBackgroundColor(new Color(245, 247, 250));
-			totalCell.setBorderColor(borderColor); // Forzamos borde idéntico a los headers
+			totalCell.setBorderColor(borderColor);
 			mainTable.addCell(totalCell);
 		}
 		document.add(mainTable);
 
-		// --- Listado de Comentarios Diarios ---
 		boolean hasDailyComments = false;
 		java.util.List<Paragraph> dailyCommentsList = new java.util.ArrayList<>();
 
@@ -201,11 +188,8 @@ public class PdfGeneratorService {
 					hasDailyComments = true;
 					String dateForDay = calculatedDates[java.util.Arrays.asList(DAYS).indexOf(day)];
 
-					String textFormat = String.format("•  %s - %s (%s): %s", 
-							row.getProjectName(),
-							DAY_LABELS.getOrDefault(day, day).substring(0, 3), 
-							dateForDay, 
-							entry.getComment().trim());
+					String textFormat = String.format("•  %s - %s (%s): %s", row.getProjectName(),
+							DAY_LABELS.getOrDefault(day, day).substring(0, 3), dateForDay, entry.getComment().trim());
 
 					Paragraph pComment = new Paragraph(textFormat, bodyFont);
 					pComment.setIndentationLeft(12);
@@ -215,7 +199,6 @@ public class PdfGeneratorService {
 			}
 		}
 
-		// --- Comentario Global ---
 		if (data.getGlobalComment() != null && !data.getGlobalComment().trim().isEmpty()) {
 			Paragraph commTitle = new Paragraph("Weekly Global Comment", sectionFont);
 			commTitle.setSpacingBefore(20);
@@ -233,22 +216,21 @@ public class PdfGeneratorService {
 		}
 
 		if (hasDailyComments) {
-		    Paragraph dailyCommTitle = new Paragraph("Daily Project Comments", sectionFont);
-		    dailyCommTitle.setSpacingBefore(20);
-		    dailyCommTitle.setSpacingAfter(8);
-		    document.add(dailyCommTitle);
+			Paragraph dailyCommTitle = new Paragraph("Daily Project Comments", sectionFont);
+			dailyCommTitle.setSpacingBefore(20);
+			dailyCommTitle.setSpacingAfter(8);
+			document.add(dailyCommTitle);
 
-		    // Opcional: Meter los comentarios en una tabla con fondo suave para distinguirlos
-		    PdfPTable commentsTable = new PdfPTable(1);
-		    commentsTable.setWidthPercentage(95); // Un poco más estrecha que el reporte principal
-		    
-		    for (Paragraph p : dailyCommentsList) {
-		        PdfPCell cell = new PdfPCell(p);
-		        cell.setBorder(PdfPCell.NO_BORDER); // Sin bordes
-		        cell.setPaddingBottom(5);
-		        commentsTable.addCell(cell);
-		    }
-		    document.add(commentsTable);
+			PdfPTable commentsTable = new PdfPTable(1);
+			commentsTable.setWidthPercentage(95);
+
+			for (Paragraph p : dailyCommentsList) {
+				PdfPCell cell = new PdfPCell(p);
+				cell.setBorder(PdfPCell.NO_BORDER);
+				cell.setPaddingBottom(5);
+				commentsTable.addCell(cell);
+			}
+			document.add(commentsTable);
 		}
 
 		document.close();
@@ -262,12 +244,11 @@ public class PdfGeneratorService {
 			int year = Integer.parseInt(parts[0]);
 			int week = Integer.parseInt(parts[1]);
 
-			// ISO-8601 Week Fields
+			// ISO-8601
 			java.time.temporal.WeekFields weekFields = java.time.temporal.WeekFields.of(java.util.Locale.getDefault());
-			LocalDate date = LocalDate.of(year, 2, 1) // Mes cualquiera
-					.with(weekFields.weekOfYear(), week).with(weekFields.dayOfWeek(), 1); // 1 = Lunes
+			LocalDate date = LocalDate.of(year, 2, 1).with(weekFields.weekOfYear(), week).with(weekFields.dayOfWeek(),
+					1);
 
-			// Ajustamos para que tu tabla empiece en Domingo (restamos 1 día)
 			LocalDate current = date.minusDays(1);
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 

@@ -27,10 +27,10 @@ public class ProjectTimeRowDTO {
 		this.departmentName = departmentName;
 		this.days = days;
 	}
-	
+
 	public void addEntry(String dayKey, TimeEntryDTO entry) {
-        this.days.put(dayKey.toLowerCase(), entry);
-    }
+		this.days.put(dayKey.toLowerCase(), entry);
+	}
 
 	public Long getPid() {
 		return pid;

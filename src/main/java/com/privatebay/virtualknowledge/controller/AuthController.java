@@ -23,78 +23,73 @@ import java.util.stream.Collectors;
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
-    private final RoleRepository roleRepository;
+	private final UserRepository userRepository;
+	private final PasswordEncoder passwordEncoder;
+	private final JwtService jwtService;
+	private final RoleRepository roleRepository;
 
-    public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder, 
-                          JwtService jwtService, RoleRepository roleRepository) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtService = jwtService;
-        this.roleRepository = roleRepository;
-    }
+	public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService,
+			RoleRepository roleRepository) {
+		this.userRepository = userRepository;
+		this.passwordEncoder = passwordEncoder;
+		this.jwtService = jwtService;
+		this.roleRepository = roleRepository;
+	}
 
-    @PostMapping("/register")
-    public Map<String, Object> register(@RequestBody Map<String, String> body) {
-        String email = body.get("email");
-        
-        if (userRepository.findByEmail(email).isPresent()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El email ya está registrado");
-        }
+	@PostMapping("/register")
+	public Map<String, Object> register(@RequestBody Map<String, String> body) {
+		String email = body.get("email");
 
-        String roleStr = body.getOrDefault("role", "ROLE_USER").toUpperCase();
-        RoleType roleType = RoleType.valueOf(roleStr);
-        
-        Role userRole = roleRepository.findByName(roleType)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Rol no encontrado"));
+		if (userRepository.findByEmail(email).isPresent()) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El email ya está registrado");
+		}
 
-        User user = new User();
-        user.setName(body.get("name"));
-        user.setEmail(email);
-        user.setPassword(passwordEncoder.encode(body.get("password")));
-        user.setRegistrationDate(LocalDateTime.now());
-        user.setStatus("ACTIVE");
-        user.addRole(userRole);
+		String roleStr = body.getOrDefault("role", "ROLE_USER").toUpperCase();
+		RoleType roleType = RoleType.valueOf(roleStr);
 
-        User savedUser = userRepository.save(user);
+		Role userRole = roleRepository.findByName(roleType)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Rol no encontrado"));
 
-        List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(roleType.name()));
-        String token = jwtService.generateToken(email, savedUser.getId(), authorities);
+		User user = new User();
+		user.setName(body.get("name"));
+		user.setEmail(email);
+		user.setPassword(passwordEncoder.encode(body.get("password")));
+		user.setRegistrationDate(LocalDateTime.now());
+		user.setStatus("ACTIVE");
+		user.addRole(userRole);
 
-        return Map.of(
-            "token", token, 
-            "id", savedUser.getId(), 
-            "message", "Usuario registrado correctamente"
-        );
-    }
+		User savedUser = userRepository.save(user);
 
-    @PostMapping("/login")
-    public Map<String, Object> login(@RequestBody Map<String, String> body) {
-        User user = userRepository.findByEmail(body.get("email"))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario no encontrado"));
+		List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(roleType.name()));
+		String token = jwtService.generateToken(email, savedUser.getId(), authorities);
 
-        if (!passwordEncoder.matches(body.get("password"), user.getPassword())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Contraseña inválida");
-        }
+		return Map.of("token", token, "id", savedUser.getId(), "message", "Usuario registrado correctamente");
+	}
 
-        List<SimpleGrantedAuthority> authorities = user.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName().name()))
-                .collect(Collectors.toList());
+	@PostMapping("/login")
+	public Map<String, Object> login(@RequestBody Map<String, String> body) {
+		User user = userRepository.findByEmail(body.get("email"))
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario no encontrado"));
 
-        String token = jwtService.generateToken(user.getEmail(), user.getId(), authorities);
+		if (!passwordEncoder.matches(body.get("password"), user.getPassword())) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Contraseña inválida");
+		}
 
-        // Cambiamos Map.of por un HashMap tradicional para evitar que explote si hay nulos
-        Map<String, Object> response = new HashMap<>();
-        response.put("token", token);
-        response.put("id", user.getId());
-        response.put("name", user.getName() != null ? user.getName() : "");
-        response.put("email", user.getEmail());
-        response.put("roles", authorities.stream().map(SimpleGrantedAuthority::getAuthority).collect(Collectors.toList()));
-        response.put("status", user.getStatus() != null ? user.getStatus() : "ACTIVE");
+		List<SimpleGrantedAuthority> authorities = user.getRoles().stream()
+				.map(role -> new SimpleGrantedAuthority(role.getName().name())).collect(Collectors.toList());
 
-        return response;
-    }
+		String token = jwtService.generateToken(user.getEmail(), user.getId(), authorities);
+
+		Map<String, Object> response = new HashMap<>();
+		response.put("token", token);
+		response.put("id", user.getId());
+		response.put("name", user.getName() != null ? user.getName() : "");
+		response.put("email", user.getEmail());
+		response.put("roles",
+				authorities.stream().map(SimpleGrantedAuthority::getAuthority).collect(Collectors.toList()));
+		response.put("status", user.getStatus() != null ? user.getStatus() : "ACTIVE");
+
+		return response;
+	}
 
 }

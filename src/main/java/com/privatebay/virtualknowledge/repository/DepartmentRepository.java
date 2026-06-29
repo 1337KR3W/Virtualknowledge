@@ -8,8 +8,8 @@ import org.springframework.stereotype.Repository;
 import com.privatebay.virtualknowledge.entity.Department;
 
 @Repository
-public interface DepartmentRepository extends JpaRepository<Department, Long>{
-	
+public interface DepartmentRepository extends JpaRepository<Department, Long> {
+
 	Optional<Department> findByName(String name);
 
 }

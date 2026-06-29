@@ -19,70 +19,66 @@ import java.util.Map;
 @CrossOrigin(origins = "http://localhost:4200")
 public class UserController {
 
-    private final UserService userService;
-    private final PasswordEncoder passwordEncoder;
-    private final RoleRepository roleRepository;
+	private final UserService userService;
+	private final PasswordEncoder passwordEncoder;
+	private final RoleRepository roleRepository;
 
-    public UserController(UserService userService, PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
-        this.userService = userService;
-        this.passwordEncoder = passwordEncoder;
-        this.roleRepository = roleRepository;
-    }
+	public UserController(UserService userService, PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
+		this.userService = userService;
+		this.passwordEncoder = passwordEncoder;
+		this.roleRepository = roleRepository;
+	}
 
-    @GetMapping("/profile/{userId}")
-    public ResponseEntity<?> getProfile(@PathVariable Long userId) {
-        if (userId == null) {
-            return ResponseEntity.badRequest().body("El ID de usuario no puede ser nulo");
-        }
-        return ResponseEntity.ok(userService.findById(userId));
-    }
+	@GetMapping("/profile/{userId}")
+	public ResponseEntity<?> getProfile(@PathVariable Long userId) {
+		if (userId == null) {
+			return ResponseEntity.badRequest().body("El ID de usuario no puede ser nulo");
+		}
+		return ResponseEntity.ok(userService.findById(userId));
+	}
 
-    @PostMapping("/admin/register")
-    @PreAuthorize("hasRole('ADMIN')") // Usamos Authority para evitar el lío del prefijo ROLE_
-    public ResponseEntity<?> registerByAdmin(@RequestBody Map<String, Object> body) {
-        try {
-            String email = (String) body.get("email");
-            String password = (String) body.get("password"); // Extraemos la password del JSON
-            String name = (String) body.get("name");
-            
-            // 1. Validación de existencia
-            if (userService.existsByEmail(email)) {
-                return ResponseEntity.badRequest().body("Error: El email ya está registrado.");
-            }
+	@PostMapping("/admin/register")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<?> registerByAdmin(@RequestBody Map<String, Object> body) {
+		try {
+			String email = (String) body.get("email");
+			String password = (String) body.get("password");
+			String name = (String) body.get("name");
 
-            // 2. Mapeo manual a la Entidad (El estándar es usar un Mapper, pero aquí lo hacemos claro)
-            User newUser = new User();
-            newUser.setName(name);
-            newUser.setEmail(email);
-            newUser.setPassword(passwordEncoder.encode(password)); // Encriptación vital
-            newUser.setRegistrationDate(LocalDateTime.now());
-            newUser.setStatus("ACTIVE");
+			if (userService.existsByEmail(email)) {
+				return ResponseEntity.badRequest().body("Error: El email ya está registrado.");
+			}
 
-            // 3. Manejo de Roles
-            // Angular enviará un array ["ADMIN"] o ["USER"]
-            Object rolesObj = body.get("roles");
-            String roleStr = "USER"; // Default
-            
-            if (rolesObj instanceof List && !((List<?>) rolesObj).isEmpty()) {
-                roleStr = ((List<?>) rolesObj).get(0).toString();
-            }
+			User newUser = new User();
+			newUser.setName(name);
+			newUser.setEmail(email);
+			newUser.setPassword(passwordEncoder.encode(password));
+			newUser.setRegistrationDate(LocalDateTime.now());
+			newUser.setStatus("ACTIVE");
 
-            Role userRole = roleRepository.findByName(RoleType.valueOf(roleStr))
-                    .orElseThrow(() -> new RuntimeException("Error: Rol no encontrado."));
-            newUser.addRole(userRole);
+			Object rolesObj = body.get("roles");
+			String roleStr = "USER";
 
-            userService.save(newUser);
+			if (rolesObj instanceof List && !((List<?>) rolesObj).isEmpty()) {
+				roleStr = ((List<?>) rolesObj).get(0).toString();
+			}
 
-            return ResponseEntity.ok(Map.of("message", "Usuario creado exitosamente"));
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Error: " + e.getMessage());
-        }
-    }
-    
-    @GetMapping("/admin/department/{departmentId}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<List<User>> getUsersByDepartment(@PathVariable Long departmentId) {
-        // Retorna la lista de usuarios asociados a ese ID de departamento
-        return ResponseEntity.ok(userService.findByDepartmentId(departmentId));
-    }
+			Role userRole = roleRepository.findByName(RoleType.valueOf(roleStr))
+					.orElseThrow(() -> new RuntimeException("Error: Rol no encontrado."));
+			newUser.addRole(userRole);
+
+			userService.save(newUser);
+
+			return ResponseEntity.ok(Map.of("message", "Usuario creado exitosamente"));
+		} catch (Exception e) {
+			return ResponseEntity.internalServerError().body("Error: " + e.getMessage());
+		}
+	}
+
+	@GetMapping("/admin/department/{departmentId}")
+	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+	public ResponseEntity<List<User>> getUsersByDepartment(@PathVariable Long departmentId) {
+
+		return ResponseEntity.ok(userService.findByDepartmentId(departmentId));
+	}
 }
