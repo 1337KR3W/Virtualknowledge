@@ -1,8 +1,8 @@
 package com.privatebay.virtualknowledge.entity;
 
-import java.time.LocalDateTime;
-
+import java.time.LocalDate;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,46 +17,54 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "projects")
 public class Project {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@Column(nullable = false, length = 32)
 	private String name;
-	
-    @Column(nullable = false, length = 300, unique = true)
+
+	@Column(nullable = false, length = 300, unique = true)
 	private String description;
-	
-    @Column(name = "creation_date", nullable = false, updatable = false)
-	private LocalDateTime creationDate;
-	
+
+	@Column(name = "start_date", nullable = false, updatable = false)
+	private LocalDate startDate;
+
+	@Column(name = "end_date", nullable = false, updatable = false)
+	private LocalDate endDate;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", nullable = false)
-	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private User user;
-	
-	//EMPTY CONSTRUCTOR
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "department_id", nullable = false)
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	private Department department;
+
 	public Project() {
-		
-	}
-	
-	//DEFAULT CONSTRUCTOR
-	public Project(LocalDateTime creationDate) {
-		super();
-		this.creationDate = LocalDateTime.now();
+
 	}
 
-	//CONSTRUCTOR USING FIELDS
-	public Project(String name, String description, LocalDateTime creationDate) {
+	public Project(LocalDate startDate) {
+		super();
+		this.startDate = LocalDate.now();
+	}
+
+	public Project(String name, String description, LocalDate startDate, LocalDate endDate) {
 		super();
 		this.name = name;
 		this.description = description;
-		this.creationDate = creationDate;
+		this.startDate = startDate;
+		this.endDate = endDate;
 	}
 
-	
-	//GETTERS AND SETTERS
+	public User getUser() {
+		return user;
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -77,13 +85,28 @@ public class Project {
 		return id;
 	}
 
-	public LocalDateTime getCreationDate() {
-		return creationDate;
+	public LocalDate getStartDate() {
+		return startDate;
 	}
 
-	public User getUser() {
-		return user;
+	public void setStartDate(LocalDate startDate) {
+		this.startDate = startDate;
 	}
-	
-	
+
+	public LocalDate getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(LocalDate endDate) {
+		this.endDate = endDate;
+	}
+
+	public Department getDepartment() {
+		return department;
+	}
+
+	public void setDepartment(Department department) {
+		this.department = department;
+	}
+
 }

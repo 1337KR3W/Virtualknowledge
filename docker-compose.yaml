@@ -15,8 +15,31 @@ services:
     networks:
       - springnet
     volumes:
-      #- ./db_data:/var/lib/mysql
+      
       - ./initdb:/docker-entrypoint-initdb.d
+  
+#  app:
+#  
+#    build: 
+#      context: . 
+#      dockerfile: Dockerfile
+#    container_name: spring_boot_app
+#    restart: always
+#    ports:
+#      - "8080:8080"
+#    networks:
+#      - springnet
+#  
+#    depends_on:
+#      mysql:
+#        condition: service_started 
+#    environment:
+#    
+#    
+##      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/db
+ #     SPRING_DATASOURCE_USERNAME: admin
+ #     SPRING_DATASOURCE_PASSWORD: admin
+    
 
 volumes:
   db_data:

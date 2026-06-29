@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.privatebay</groupId>
-	<artifactId>virtualknowledge-0.0.1-SNAPSHOT.jar</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<artifactId>Virtualknowledge</artifactId>
+	<version>0.1.0</version>
 	<name>virtualknowledge</name>
-	<description>Virtualknowledge is an application developed to collect all the knowledge learned about application development in Spring Boot.</description>
+	<description>The Virtual Knowledge task manager is a SaaS that provides a platform for companies to access and manage assigned projects by users.</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -104,8 +104,21 @@
 	        <version>5.5.0</version>
 	        <scope>test</scope>
 	    </dependency>
-
-
+		
+		 <!--ENV-->
+		<dependency>
+		    <groupId>io.github.cdimascio</groupId>
+		    <artifactId>dotenv-java</artifactId>
+		    <version>3.0.0</version>
+		</dependency>
+		
+		<!--OpenPDF for PDF generation-->
+		<dependency>
+    		<groupId>com.github.librepdf</groupId>
+    		<artifactId>openpdf</artifactId>
+    		<version>2.0.3</version>
+		</dependency>
+		
 	</dependencies>
 
 	<build>
