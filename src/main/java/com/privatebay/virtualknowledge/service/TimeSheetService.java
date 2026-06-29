@@ -39,12 +39,24 @@ public class TimeSheetService {
         String globalCommentExtracted = "";
 
         for (TimeSheet ts : entries) {
+            // 1. Extraer comentario global
             if (ts.getGlobalComment() != null && !ts.getGlobalComment().trim().isEmpty() && globalCommentExtracted.isEmpty()) {
                 globalCommentExtracted = ts.getGlobalComment().trim();
-                // 🔍 DEPURACIÓN 2: Ver si encontramos el comentario en el bucle
-                System.out.println("DEBUG: ¡Comentario Global encontrado en bucle!: " + globalCommentExtracted);
             }
-            // ... resto de tu código del bucle ...
+
+            // 2. Obtener o crear la fila del proyecto
+            Long pid = ts.getProject().getId();
+            rowsMap.putIfAbsent(pid, new ProjectTimeRowDTO(
+                pid, 
+                ts.getProject().getName(), 
+                ts.getProject().getDepartment().getName() // Asegúrate de que el proyecto tenga departamento
+            ));
+
+            // 3. Crear el entry y añadirlo al mapa de días
+            TimeEntryDTO entry = new TimeEntryDTO(ts.getHours(), ts.getComment());
+            String dayKey = ts.getWorkDate().getDayOfWeek().name().substring(0, 3); // MON, TUE...
+            
+            rowsMap.get(pid).addEntry(dayKey, entry);
         }
 
         TimeSheetRequestDTO response = new TimeSheetRequestDTO();
@@ -55,6 +67,7 @@ public class TimeSheetService {
         
         // 🔍 DEPURACIÓN 3: Ver qué sale finalmente hacia la API
         System.out.println("DEBUG: Enviando al Front-End -> GlobalComment: [" + response.getGlobalComment() + "]");
+        System.out.println("DEBUG: Tamaño de la lista de proyectos en el DTO final: " + response.getRows().size());
         
         return response;
     }
@@ -102,4 +115,5 @@ public class TimeSheetService {
             default -> monday;
         };
     }
+    
 }

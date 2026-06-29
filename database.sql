@@ -114,20 +114,29 @@ INSERT INTO user_departments (user_id, department_id) VALUES
 
 -- Projects
 INSERT INTO projects (name, description, start_date, end_date, user_id, department_id) VALUES
-('Virtualknowledge', 'Project to share knowledge between users','2026-01-01', '2026-03-01', 3, 7),
+('Virtualknowledge', 'Project to share knowledge between users','2026-06-28', '2026-08-28', 3, 7),
 ('Inventory System', 'Project to manage products','2026-01-04', NULL, 3, 3),
-('E-commerce Platform', 'Full-stack online store with payment integration','2026-01-04', '2026-03-01', 3, 1),
-('Logistik', 'Project to manage warehouse products and stock','2026-01-10', '2026-03-01', 3, 1),
-('Customer Portal', 'Help desk and ticketing system for clients','2026-01-12', '2026-03-01', 3, 1),
-('Mobile Fitness App', 'Android/iOS app to track daily workouts','2026-01-15', NULL, 3, 8),
-('Data Analytics Dashboard', 'Visualizing sales data with real-time charts','2026-01-20', '2026-03-01', 3, 2),
-('Task Management Tool', 'Kanban style board for team collaboration','2026-02-01', NULL, 3, 2),
-('Virtual Learning Environment', 'LMS for online courses and student grading','2026-02-05', '2026-03-01', 3, 4),
-('Smart Home Controller', 'IoT project to manage lighting and temperature','2026-02-12', '2026-03-01', 3, 1),
-('Financial Tracker', 'Personal finance app with expense categorization','2026-03-01', '2026-04-01', 3, 8),
-('AI Chatbot Service', 'NLP-based bot for automated customer service','2026-03-01', '2026-04-01', 3, 1),
+('E-commerce Platform', 'Full-stack online store with payment integration','2026-06-04', '2026-08-01', 3, 1),
+('Logistik', 'Project to manage warehouse products and stock','2026-06-10', '2026-08-01', 3, 1),
+('Customer Portal', 'Help desk and ticketing system for clients','2026-06-12', '2026-08-01', 3, 1),
+('Mobile Fitness App', 'Android/iOS app to track daily workouts','2026-06-15', NULL, 3, 8),
+('Data Analytics Dashboard', 'Visualizing sales data with real-time charts','2026-06-20', '2026-08-01', 3, 2),
+('Task Management Tool', 'Kanban style board for team collaboration','2026-06-01', NULL, 3, 2),
+('Virtual Learning Environment', 'LMS for online courses and student grading','2026-05-05', '2026-06-01', 3, 4),
+('Smart Home Controller', 'IoT project to manage lighting and temperature','2026-05-12', '2026-06-01', 3, 1),
+('Financial Tracker', 'Personal finance app with expense categorization','2026-05-01', '2026-06-01', 3, 8),
+('AI Chatbot Service', 'NLP-based bot for automated customer service','2026-04-01', '2026-05-01', 3, 1),
 ('Recipe Book App', 'Social platform for sharing and saving cooking recipes','2026-03-01', NULL, 3, 1),
 ('Supply Chain Logger', 'Blockchain project for tracking goods transit','2026-04-01', NULL, 3, 1),
 ('Fleet Management', 'GPS tracking and maintenance for company vehicles','2026-04-01', NULL, 3, 8),
 ('Web Application', 'Internal web app development','2026-04-01', NULL, 2, 1),
-('Testing with JUnit', 'Learn basics of testing with JUnit','2026-04-01', '2026-04-03', 1, 2);
+('Testing with JUnit', 'Learn basics of testing with JUnit','2026-04-01', '2026-05-03', 1, 2);
+
+INSERT INTO timesheets (user_id, project_id, work_date, hours, comment, global_comment, week_id) VALUES
+(3, 1, '2026-06-29', 8.00, 'Desarrollo backend', 'asdf', '2026-W27'),
+(3, 1, '2026-06-30', 8.00, 'Frontend ajustes', 'asdf', '2026-W27'),
+(3, 1, '2026-07-01', 7.50, 'Reunión de equipo', 'asdf', '2026-W27'),
+(3, 1, '2026-07-02', 8.00, 'Testing unitario', 'asdf', '2026-W27'),
+(3, 1, '2026-07-03', 6.50, 'Documentación', 'asdf', '2026-W27'),
+(3, 1, '2026-07-04', 0.00, '', 'asdf', '2026-W27'),
+(3, 1, '2026-07-05', 0.00, '', 'asdf', '2026-W27');

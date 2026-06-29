@@ -4,6 +4,7 @@ import java.util.List;
 
 public class TimeSheetRequestDTO {
 	private String weekId;
+	private String[] weekDates;
 	private String globalComment;
 	private List<ProjectTimeRowDTO> rows;
 	private Long userId;
@@ -50,6 +51,14 @@ public class TimeSheetRequestDTO {
 
 	public void setUserId(Long userId) {
 		this.userId = userId;
+	}
+
+	public String[] getWeekDates() {
+		return weekDates;
+	}
+
+	public void setWeekDates(String[] weekDates) {
+		this.weekDates = weekDates;
 	}
 
 }

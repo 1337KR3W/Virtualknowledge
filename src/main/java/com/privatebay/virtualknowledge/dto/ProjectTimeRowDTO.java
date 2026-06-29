@@ -1,16 +1,23 @@
 package com.privatebay.virtualknowledge.dto;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class ProjectTimeRowDTO {
 
 	private Long pid;
 	private String projectName;
-	private String departmentName; // <-- Añadimos el nuevo campo para capturar el valor del Front
-	private Map<String, TimeEntryDTO> days;
+	private String departmentName;
+	private Map<String, TimeEntryDTO> days = new HashMap<>();
 
 	public ProjectTimeRowDTO() {
 		super();
+	}
+
+	public ProjectTimeRowDTO(Long pid, String projectName, String departmentName) {
+		this.pid = pid;
+		this.projectName = projectName;
+		this.departmentName = departmentName;
 	}
 
 	public ProjectTimeRowDTO(Long pid, String projectName, String departmentName, Map<String, TimeEntryDTO> days) {
@@ -20,6 +27,10 @@ public class ProjectTimeRowDTO {
 		this.departmentName = departmentName;
 		this.days = days;
 	}
+	
+	public void addEntry(String dayKey, TimeEntryDTO entry) {
+        this.days.put(dayKey.toLowerCase(), entry);
+    }
 
 	public Long getPid() {
 		return pid;
