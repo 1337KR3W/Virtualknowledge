@@ -25,7 +25,7 @@ public class ProjectController {
     }
 
     @GetMapping("/my-projects")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     public ResponseEntity<List<ProjectDTO>> getAllProjects() {
         Long userId = securityService.getCurrentUserId();
         List<ProjectDTO> projects = projectService.findProjectsByUserId(userId);
@@ -33,7 +33,7 @@ public class ProjectController {
     }
 
     @GetMapping("/my-projects/week/{weekId}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     public ResponseEntity<List<ProjectDTO>> getProjectsByWeek(@PathVariable String weekId) {
         
         Long userId = securityService.getCurrentUserId();
