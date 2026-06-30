@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.lowagie.text.*;
 import com.lowagie.text.pdf.*;
 import com.privatebay.virtualknowledge.dto.ProjectTimeRowDTO;
+import com.privatebay.virtualknowledge.dto.TimeEntryDTO;
 import com.privatebay.virtualknowledge.dto.TimeSheetRequestDTO;
 
 @Service
@@ -18,7 +19,7 @@ public class PdfGeneratorService {
 
 	private static final String[] DAYS = { "sun", "mon", "tue", "wed", "thu", "fri", "sat" };
 	private static final String[] HEADERS = { "Project", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Total" };
-
+	
 	private static final Map<String, String> DAY_LABELS = Map.of("sun", "Sunday", "mon", "Monday", "tue", "Tuesday",
 			"wed", "Wednesday", "thu", "Thursday", "fri", "Friday", "sat", "Saturday");
 
@@ -55,7 +56,7 @@ public class PdfGeneratorService {
 		for (ProjectTimeRowDTO row : data.getRows()) {
 			double rowTotal = 0;
 			for (String day : DAYS) {
-				var entry = row.getDays().get(day);
+				TimeEntryDTO entry = row.getDays().get(day);
 				if (entry != null && entry.getHours() != null) {
 					rowTotal += entry.getHours().doubleValue();
 				}
@@ -154,7 +155,7 @@ public class PdfGeneratorService {
 			BigDecimal rowTotal = BigDecimal.ZERO;
 
 			for (String day : DAYS) {
-				var entry = row.getDays().get(day);
+				TimeEntryDTO entry = row.getDays().get(day);
 				BigDecimal hr = (entry != null && entry.getHours() != null) ? entry.getHours() : BigDecimal.ZERO;
 				rowTotal = rowTotal.add(hr);
 
@@ -183,7 +184,7 @@ public class PdfGeneratorService {
 				continue;
 
 			for (String day : DAYS) {
-				var entry = row.getDays().get(day);
+				TimeEntryDTO entry = row.getDays().get(day);
 				if (entry != null && entry.getComment() != null && !entry.getComment().trim().isEmpty()) {
 					hasDailyComments = true;
 					String dateForDay = calculatedDates[java.util.Arrays.asList(DAYS).indexOf(day)];
