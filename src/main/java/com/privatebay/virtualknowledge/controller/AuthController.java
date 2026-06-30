@@ -7,7 +7,11 @@ import com.privatebay.virtualknowledge.repository.RoleRepository;
 import com.privatebay.virtualknowledge.repository.UserRepository;
 import com.privatebay.virtualknowledge.service.JwtService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -27,13 +31,15 @@ public class AuthController {
 	private final PasswordEncoder passwordEncoder;
 	private final JwtService jwtService;
 	private final RoleRepository roleRepository;
+	private final AuthenticationManager authenticationManager;
 
 	public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService,
-			RoleRepository roleRepository) {
+			RoleRepository roleRepository, AuthenticationManager authenticationManager) {
 		this.userRepository = userRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.jwtService = jwtService;
 		this.roleRepository = roleRepository;
+		this.authenticationManager = authenticationManager;
 	}
 
 	@PostMapping("/register")
@@ -68,26 +74,22 @@ public class AuthController {
 
 	@PostMapping("/login")
 	public Map<String, Object> login(@RequestBody Map<String, String> body) {
-		User user = userRepository.findByEmail(body.get("email"))
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario no encontrado"));
+		Authentication authentication = authenticationManager
+				.authenticate(new UsernamePasswordAuthenticationToken(body.get("email"), body.get("password")));
 
-		if (!passwordEncoder.matches(body.get("password"), user.getPassword())) {
-			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Contraseña inválida");
-		}
+		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+		User user = userRepository.findByEmail(userDetails.getUsername()).orElseThrow();
 
-		List<SimpleGrantedAuthority> authorities = user.getRoles().stream()
-				.map(role -> new SimpleGrantedAuthority(role.getName().name())).collect(Collectors.toList());
-
-		String token = jwtService.generateToken(user.getEmail(), user.getId(), authorities);
+		String token = jwtService.generateToken(user.getEmail(), user.getId(), authentication.getAuthorities());
 
 		Map<String, Object> response = new HashMap<>();
 		response.put("token", token);
 		response.put("id", user.getId());
-		response.put("name", user.getName() != null ? user.getName() : "");
+		response.put("name", user.getName());
 		response.put("email", user.getEmail());
 		response.put("roles",
-				authorities.stream().map(SimpleGrantedAuthority::getAuthority).collect(Collectors.toList()));
-		response.put("status", user.getStatus() != null ? user.getStatus() : "ACTIVE");
+				authentication.getAuthorities().stream().map(a -> a.getAuthority()).collect(Collectors.toList()));
+		response.put("status", user.getStatus());
 
 		return response;
 	}
