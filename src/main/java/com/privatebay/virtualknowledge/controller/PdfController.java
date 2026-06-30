@@ -30,14 +30,14 @@ public class PdfController {
     public ResponseEntity<byte[]> downloadWeeklyTimesheetPdf(@PathVariable String weekId) {
         try {
             Long userId = securityService.getCurrentUserId();
-            String username = securityService.getCurrentUser().getName(); 
+            String user = securityService.getCurrentUser().getFirstName() + " " + securityService.getCurrentUser().getLastName(); 
             TimeSheetRequestDTO data = timeSheetService.getTimeSheetByWeek(userId, weekId);
             
             if (data == null || data.getRows() == null || data.getRows().isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
             }
 
-            byte[] pdfBytes = pdfGeneratorService.generateWeeklyReport(data, username);
+            byte[] pdfBytes = pdfGeneratorService.generateWeeklyReport(data, user);
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);

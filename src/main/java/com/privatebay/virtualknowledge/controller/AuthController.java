@@ -57,7 +57,8 @@ public class AuthController {
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Rol no encontrado"));
 
 		User user = new User();
-		user.setName(body.get("name"));
+		user.setFirstName(body.get("firstName"));
+		user.setLastName(body.get("lastName"));
 		user.setEmail(email);
 		user.setPassword(passwordEncoder.encode(body.get("password")));
 		user.setRegistrationDate(LocalDateTime.now());
@@ -85,7 +86,8 @@ public class AuthController {
 		Map<String, Object> response = new HashMap<>();
 		response.put("token", token);
 		response.put("id", user.getId());
-		response.put("name", user.getName());
+		response.put("firstName", user.getFirstName());
+		response.put("lastName", user.getLastName());
 		response.put("email", user.getEmail());
 		response.put("roles",
 				authentication.getAuthorities().stream().map(a -> a.getAuthority()).collect(Collectors.toList()));

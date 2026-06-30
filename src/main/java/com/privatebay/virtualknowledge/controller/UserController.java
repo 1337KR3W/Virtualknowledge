@@ -43,14 +43,16 @@ public class UserController {
 		try {
 			String email = (String) body.get("email");
 			String password = (String) body.get("password");
-			String name = (String) body.get("name");
+			String firstName = (String) body.get("firstName");
+			String lastName = (String) body.get("lastName");
 
 			if (userService.existsByEmail(email)) {
 				return ResponseEntity.badRequest().body("Error: El email ya está registrado.");
 			}
 
 			User newUser = new User();
-			newUser.setName(name);
+			newUser.setFirstName(firstName);
+			newUser.setLastName(lastName);
 			newUser.setEmail(email);
 			newUser.setPassword(passwordEncoder.encode(password));
 			newUser.setRegistrationDate(LocalDateTime.now());

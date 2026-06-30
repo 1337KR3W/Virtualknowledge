@@ -27,7 +27,10 @@ public class User {
 	private Long id;
 
 	@Column(nullable = false, length = 32)
-	private String name;
+	private String firstName;
+	
+	@Column(nullable = false, length = 32)
+	private String lastName;
 
 	@Column(nullable = false, length = 150, unique = true)
 	private String email;
@@ -60,9 +63,10 @@ public class User {
 		this.registrationDate = LocalDateTime.now();
 	}
 
-	public User(String name, String email, String password, LocalDateTime registrationDate, Set<Role> roles,
+	public User(String firstName,String lastName, String email, String password, LocalDateTime registrationDate, Set<Role> roles,
 			String status) {
-		this.name = name;
+		this.firstName = firstName;
+		this.lastName = lastName;
 		this.email = email;
 		this.password = password;
 		this.registrationDate = registrationDate;
@@ -70,12 +74,20 @@ public class User {
 		this.status = status;
 	}
 
-	public String getName() {
-		return name;
+	public String getFirstName() {
+		return firstName;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+	
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 
 	public String getEmail() {
