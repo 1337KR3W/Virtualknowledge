@@ -44,10 +44,16 @@ CREATE TABLE IF NOT EXISTS projects (
   description TEXT,
   start_date DATE NOT NULL,
   end_date DATE DEFAULT NULL,
-  user_id BIGINT NOT NULL,
   department_id BIGINT NOT NULL,
-  CONSTRAINT fk_proj_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
   CONSTRAINT fk_proj_dept FOREIGN KEY (department_id) REFERENCES departments(id) ON DELETE CASCADE
+);
+-- Table: project_users
+CREATE TABLE IF NOT EXISTS project_users (
+    project_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    PRIMARY KEY (project_id, user_id),
+    CONSTRAINT fk_pu_project FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+    CONSTRAINT fk_pu_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 -- 6. Table: timesheets
@@ -174,16 +180,16 @@ INSERT INTO user_roles (user_id, role_id) VALUES
 (40, 1);
 
 -- Departments
-INSERT INTO departments (id, name) VALUES
-(1, 'Software Engineering'),
-(2, 'Quality Assurance'),
-(3, 'Product Management'),
-(4, 'Design & UX'),
-(5, 'Infrastructure & DevOps'),
-(6, 'Data Science & AI'),
-(7, 'Cybersecurity'),
-(8, 'Customer Success'),
-(9, 'Human Resources');
+INSERT INTO departments (name) VALUES
+('Software Engineering'),
+('Quality Assurance'),
+('Product Management'),
+('Design & UX'),
+('Infrastructure & DevOps'),
+('Data Science & AI'),
+('Cybersecurity'),
+('Customer Success'),
+('Human Resources');
 
 -- User departments
 INSERT INTO user_departments (user_id, department_id) VALUES 
@@ -229,32 +235,45 @@ INSERT INTO user_departments (user_id, department_id) VALUES
 (40, 1);
 
 -- Projects
-INSERT INTO projects (name, description, start_date, end_date, user_id, department_id) VALUES
-('Cloud Migration', 'Migrating legacy servers to AWS', '2026-07-01', '2026-10-01', 1, 5),
-('AI Chatbot Beta', 'Integration of NLP for support', '2026-07-05', '2026-11-05', 5, 6),
-('Security Audit', 'Comprehensive vulnerability testing', '2026-07-10', '2026-09-10', 10, 7),
-('UI Redesign Phase 1', 'Modernizing user dashboard', '2026-07-15', '2026-12-15', 15, 4),
-('Mobile App Refactor', 'Transition to Flutter framework', '2026-07-20', '2026-12-20', 20, 1),
-('Customer Feedback API', 'Real-time survey integration', '2026-08-01', '2026-10-01', 25, 8),
-('Team Building Offsite', 'Corporate culture enhancement', '2026-08-10', '2026-08-15', 30, 9),
-('Data Warehouse Setup', 'ETL pipelines configuration', '2026-08-15', '2026-11-15', 35, 6),
-('Automated Testing Suite', 'Selenium coverage expansion', '2026-09-01', '2026-12-01', 40, 2),
-('Internal Wiki', 'Centralized docs for Devs', '2026-07-01', '2026-09-01', 3, 1),
-('Inventory Automation', 'IoT sensors integration', '2026-07-12', '2026-10-12', 8, 5),
-('Q3 Performance Review', 'Annual HR process update', '2026-09-01', '2026-10-01', 12, 9),
-('Payment Gateway V2', 'Stripe API integration', '2026-07-20', '2026-11-20', 18, 1),
-('User Access Control', 'Identity management upgrade', '2026-08-05', '2026-10-05', 22, 7),
-('E-commerce Checkout', 'Streamlining shopping cart', '2026-08-20', '2026-11-20', 28, 1),
-('DevOps Dashboard', 'Observability via Grafana', '2026-09-01', '2026-12-01', 32, 5),
-('Marketing Automation', 'CRM sync with social leads', '2026-09-15', '2026-11-15', 37, 3),
-('QA Load Testing', 'Stress testing core services', '2026-07-10', '2026-08-10', 2, 2),
-('Legacy System Deprecation', 'Cleaning up old codebase', '2026-09-01', '2026-12-30', 6, 1),
-('Design System Library', 'Figma components standardization', '2026-07-05', '2026-09-05', 11, 4),
-('HR Portal Enhancement', 'Employee benefits module', '2026-08-01', '2026-10-01', 16, 9),
-('Customer Loyalty Program', 'Rewards backend engine', '2026-08-15', '2026-11-15', 21, 8),
-('Threat Intelligence', 'Real-time security monitoring', '2026-07-20', '2026-10-20', 26, 7),
-('Predictive Analytics', 'Forecasting seasonal demand', '2026-09-01', '2026-12-01', 31, 6),
-('Project Management Tool', 'Custom task tracking features', '2026-07-01', '2026-10-01', 36, 3);
+INSERT INTO projects (name, description, start_date, end_date, department_id) VALUES
+('Cloud Migration', 'Migrating legacy servers to AWS', '2026-07-01', '2026-10-01', 5),
+('AI Chatbot Beta', 'Integration of NLP for support', '2026-07-05', '2026-11-05', 6),
+('Security Audit', 'Comprehensive vulnerability testing', '2026-07-10', '2026-09-10', 7),
+('UI Redesign Phase 1', 'Modernizing user dashboard', '2026-07-15', '2026-12-15', 4),
+('Mobile App Refactor', 'Transition to Flutter framework', '2026-07-20', '2026-12-20', 1),
+('Customer Feedback API', 'Real-time survey integration', '2026-08-01', '2026-10-01', 8),
+('Team Building Offsite', 'Corporate culture enhancement', '2026-08-10', '2026-08-15', 9),
+('Data Warehouse Setup', 'ETL pipelines configuration', '2026-08-15', '2026-11-15', 6),
+('Automated Testing Suite', 'Selenium coverage expansion', '2026-09-01', '2026-12-01', 2),
+('Internal Wiki', 'Centralized docs for Devs', '2026-07-01', '2026-09-01', 1),
+('Inventory Automation', 'IoT sensors integration', '2026-07-12', '2026-10-12', 5),
+('Q3 Performance Review', 'Annual HR process update', '2026-09-01', '2026-10-01', 9),
+('Payment Gateway V2', 'Stripe API integration', '2026-07-20', '2026-11-20', 1),
+('User Access Control', 'Identity management upgrade', '2026-08-05', '2026-10-05', 7),
+('E-commerce Checkout', 'Streamlining shopping cart', '2026-08-20', '2026-11-20', 1),
+('DevOps Dashboard', 'Observability via Grafana', '2026-09-01', '2026-12-01', 5),
+('Marketing Automation', 'CRM sync with social leads', '2026-09-15', '2026-11-15', 3),
+('QA Load Testing', 'Stress testing core services', '2026-07-10', '2026-08-10', 2),
+('Legacy System Deprecation', 'Cleaning up old codebase', '2026-09-01', '2026-12-30', 1),
+('Design System Library', 'Figma components standardization', '2026-07-05', '2026-09-05', 4),
+('HR Portal Enhancement', 'Employee benefits module', '2026-08-01', '2026-10-01', 9),
+('Customer Loyalty Program', 'Rewards backend engine', '2026-08-15', '2026-11-15', 8),
+('Threat Intelligence', 'Real-time security monitoring', '2026-07-20', '2026-10-20', 7),
+('Predictive Analytics', 'Forecasting seasonal demand', '2026-09-01', '2026-12-01', 6),
+('Project Management Tool', 'Custom task tracking features', '2026-07-01', '2026-10-01', 3);
+
+INSERT INTO project_users (project_id, user_id) VALUES
+(1,3),(2,3),(3,3),(4,3),(5,3),(6,3),(7,3),
+(1,1),
+(5,2),
+(10,3),
+(15,4),
+(20,5),
+(30,9),
+(22,7),
+(35,6),
+(12,9),
+(40,2);
 
 INSERT INTO timesheets (user_id, project_id, work_date, hours, comment, global_comment, week_id) VALUES
 (3, 1, '2026-06-29', 8.00, 'Desarrollo backend', '', '2026-W27'),
