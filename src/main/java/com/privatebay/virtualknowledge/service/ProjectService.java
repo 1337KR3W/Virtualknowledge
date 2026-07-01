@@ -26,8 +26,13 @@ public class ProjectService {
 		this.departmentRepository = departmentRepository;
 	}
 
+	public List<ProjectDTO> findAllProjects() {
+		return projectRepository.findAll().stream().map(this::convertToDTO).collect(Collectors.toList());
+	}
+
 	public List<ProjectDTO> findProjectsByUserId(Long userId) {
-		return projectRepository.findByUserId(userId).stream().map(this::convertToDTO).collect(Collectors.toList());
+		return projectRepository.findProjectByUserId(userId).stream().map(this::convertToDTO)
+				.collect(Collectors.toList());
 	}
 
 	public List<ProjectDTO> getProjectsForWeek(Long userId, String weekId) {
@@ -64,6 +69,36 @@ public class ProjectService {
 		}
 
 		return savedProject;
+	}
+
+	@Transactional
+	public void deleteProject(Long id) {
+		if (!projectRepository.existsById(id)) {
+			throw new RuntimeException("Proyecto no encontrado");
+		}
+		projectRepository.deleteById(id);
+	}
+
+	@Transactional
+	public Project updateProject(Long id, ProjectCreateDTO dto) {
+		Project project = projectRepository.findById(id)
+				.orElseThrow(() -> new RuntimeException("Proyecto no encontrado"));
+
+		project.setName(dto.getName());
+		project.setDescription(dto.getDescription());
+		project.setStartDate(dto.getStartDate());
+		project.setEndDate(dto.getEndDate());
+
+		Department dept = departmentRepository.findById(dto.getDepartmentId())
+				.orElseThrow(() -> new RuntimeException("Departamento no encontrado"));
+		project.setDepartment(dept);
+
+		if (dto.getUserIds() != null) {
+			List<User> newUsers = userRepository.findAllById(dto.getUserIds());
+			project.setUsers(new HashSet<>(newUsers));
+		}
+
+		return projectRepository.save(project);
 	}
 
 	public ProjectDTO convertToDTO(Project project) {

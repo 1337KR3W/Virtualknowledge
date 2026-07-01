@@ -27,7 +27,7 @@ public class ProjectController {
 
 	@GetMapping("/my-projects")
 	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
-	public ResponseEntity<List<ProjectDTO>> getAllProjects() {
+	public ResponseEntity<List<ProjectDTO>> getProjectsByUserId() {
 		Long userId = securityService.getCurrentUserId();
 		List<ProjectDTO> projects = projectService.findProjectsByUserId(userId);
 		return ResponseEntity.ok(projects);
@@ -55,6 +55,34 @@ public class ProjectController {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		} catch (Exception e) {
 			return ResponseEntity.internalServerError().body("Error al crear el proyecto: " + e.getMessage());
+		}
+	}
+
+	@GetMapping("/admin/all")
+	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+	public ResponseEntity<List<ProjectDTO>> getAllProjects() {
+		return ResponseEntity.ok(projectService.findAllProjects());
+	}
+
+	@PutMapping("/admin/edit/{id}")
+	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+	public ResponseEntity<?> updateProject(@PathVariable Long id, @RequestBody ProjectCreateDTO dto) {
+		try {
+			Project updated = projectService.updateProject(id, dto);
+			return ResponseEntity.ok(projectService.convertToDTO(updated));
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
+	}
+
+	@DeleteMapping("/admin/delete/{id}")
+	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+	public ResponseEntity<?> deleteProject(@PathVariable Long id) {
+		try {
+			projectService.deleteProject(id);
+			return ResponseEntity.noContent().build();
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
 		}
 	}
 }

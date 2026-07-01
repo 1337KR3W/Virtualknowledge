@@ -30,10 +30,10 @@ public class Project {
 	@Column(columnDefinition = "TEXT")
 	private String description;
 
-	@Column(name = "start_date", nullable = false, updatable = false)
+	@Column(name = "start_date", nullable = false)
 	private LocalDate startDate;
 
-	@Column(name = "end_date", nullable = false, updatable = false)
+	@Column(name = "end_date")
 	private LocalDate endDate;
 
 	@ManyToMany(fetch = FetchType.LAZY)
