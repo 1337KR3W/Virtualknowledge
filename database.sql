@@ -265,15 +265,15 @@ INSERT INTO projects (name, description, start_date, end_date, department_id) VA
 INSERT INTO project_users (project_id, user_id) VALUES
 (1,3),(2,3),(3,3),(4,3),(5,3),(6,3),(7,3),
 (1,1),
-(5,2),
-(10,3),
-(15,4),
-(20,5),
-(30,9),
-(22,7),
-(35,6),
-(12,9),
-(40,2);
+(2,5),
+(3,10),
+(4,15),
+(5,20),
+(9,30),
+(7,22),
+(6,35),
+(9,12),
+(2,40);
 
 INSERT INTO timesheets (user_id, project_id, work_date, hours, comment, global_comment, week_id) VALUES
 (3, 1, '2026-06-29', 8.00, 'Desarrollo backend', '', '2026-W27'),
