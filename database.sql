@@ -85,6 +85,24 @@ CREATE TABLE IF NOT EXISTS user_departments (
 -- DATA INSERTION
 -- -----------------------------------------------------
 
+-- Roles
+INSERT INTO roles (id, name) VALUES 
+(1, 'ROLE_USER'),
+(2, 'ROLE_ADMIN');
+
+-- Departments
+INSERT INTO departments (name) VALUES
+('Software Engineering'),
+('Quality Assurance'),
+('Product Management'),
+('Design & UX'),
+('Infrastructure & DevOps'),
+('Data Science & AI'),
+('Cybersecurity'),
+('Customer Success'),
+('Human Resources');
+
+
 -- Users (Password: "123")
 INSERT INTO users (first_name, last_name, email, password, registration_date, status) VALUES
 ('Tester','Number One', 'test1@gmail.com', '$2a$10$x8opSxm6b9KFg0d8dRLwwumQgCYZstq0MUM./jBOmefjtjC5QKbXu', CURRENT_TIMESTAMP, 'ACTIVE'),
@@ -131,108 +149,21 @@ INSERT INTO users (first_name, last_name, email, password, registration_date, st
 ('Isabelle', 'Martin', 'isabelle.m@gmail.com', '$2a$10$x8opSxm6b9KFg0d8dRLwwumQgCYZstq0MUM./jBOmefjtjC5QKbXu', CURRENT_TIMESTAMP, 'ACTIVE'),
 ('David', 'Cohen', 'd.cohen@email.il', '$2a$10$x8opSxm6b9KFg0d8dRLwwumQgCYZstq0MUM./jBOmefjtjC5QKbXu', CURRENT_TIMESTAMP, 'ACTIVE');
 
--- Roles
-INSERT INTO roles (id, name) VALUES 
-(1, 'ROLE_USER'),
-(2, 'ROLE_ADMIN');
+
 
 -- User roles
-INSERT INTO user_roles (user_id, role_id) VALUES 
-(1, 1),
-(2, 1),
-(3, 2),
-(4, 1),
-(5, 1),
-(6, 1),
-(7, 1),
-(8, 1),
-(9, 1),
-(10, 1),
-(11, 1),
-(12, 1),
-(13, 1),
-(14, 1),
-(15, 1),
-(16, 1),
-(17, 1),
-(18, 1),
-(19, 1),
-(20, 1),
-(21, 1),
-(22, 1),
-(23, 1),
-(24, 1),
-(25, 1),
-(26, 1),
-(27, 1),
-(28, 1),
-(29, 1),
-(30, 1),
-(31, 1),
-(32, 1),
-(33, 1),
-(34, 1),
-(35, 1),
-(36, 1),
-(37, 1),
-(38, 1),
-(39, 1),
-(40, 1);
+INSERT INTO user_roles (user_id, role_id) SELECT id, 1 FROM users;
+INSERT INTO user_roles (user_id, role_id) VALUES (3, 2);
 
--- Departments
-INSERT INTO departments (name) VALUES
-('Software Engineering'),
-('Quality Assurance'),
-('Product Management'),
-('Design & UX'),
-('Infrastructure & DevOps'),
-('Data Science & AI'),
-('Cybersecurity'),
-('Customer Success'),
-('Human Resources');
+
 
 -- User departments
 INSERT INTO user_departments (user_id, department_id) VALUES 
-(1, 1), (1, 2),
-(2, 1), (2, 5),
-(3, 1), (3, 2), (3, 3), (3, 4),(3, 5), (3, 6), (3, 7), (3, 8), (3, 9),
-(4, 1), 
-(5, 2), 
-(6, 3), 
-(7, 4), 
-(8, 5), 
-(9, 6), 
-(10, 7), 
-(11, 8), 
-(12, 9),
-(13, 1), 
-(14, 2), 
-(15, 3), 
-(16, 4), 
-(17, 5), 
-(18, 6), 
-(19, 7), 
-(20, 8), 
-(21, 9),
-(22, 1), 
-(23, 2), 
-(24, 3), 
-(25, 4), 
-(26, 5), 
-(27, 6), 
-(28, 7), 
-(29, 8), 
-(30, 9),
-(31, 1), 
-(32, 2), 
-(33, 3), 
-(34, 4), 
-(35, 5), 
-(36, 6), 
-(37, 7), 
-(38, 8), 
-(39, 9),
-(40, 1);
+(1, 1), (2, 1), (3, 1),(3, 2),(3, 3),(3, 4),(3, 5),(3, 6),(3, 7),(3, 8), (3, 9), (4, 1), (5, 2), (6, 2), (7, 2), (8, 3), (9, 3), (10, 3),
+(11, 4), (12, 4), (13, 4), (14, 5), (15, 5), (16, 5), (17, 6), (18, 6), (19, 6),
+(20, 7), (21, 7), (22, 7), (23, 8), (24, 8), (25, 8), (26, 9), (27, 9), (28, 9),
+(29, 1), (30, 2), (31, 3), (32, 4), (33, 5), (34, 6), (35, 7), (36, 8), (37, 9),
+(38, 1), (39, 2), (40, 3);
 
 -- Projects
 INSERT INTO projects (name, description, start_date, end_date, department_id) VALUES
@@ -260,20 +191,16 @@ INSERT INTO projects (name, description, start_date, end_date, department_id) VA
 ('Customer Loyalty Program', 'Rewards backend engine', '2026-08-15', '2026-11-15', 8),
 ('Threat Intelligence', 'Real-time security monitoring', '2026-07-20', '2026-10-20', 7),
 ('Predictive Analytics', 'Forecasting seasonal demand', '2026-09-01', '2026-12-01', 6),
-('Project Management Tool', 'Custom task tracking features', '2026-07-01', '2026-10-01', 3);
+('Project Management Tool', 'Custom task tracking features', '2026-07-01', '2026-10-01', 3),
+('Legacy Refactor', 'Modernización de código antiguo', '2026-07-01', NULL, 1),
+('Bug Squashing', 'Limpieza general de tickets Jira', '2026-07-15', NULL, 2),
+('Market Research', 'Análisis de competencia', '2026-08-01', NULL,3),
+('Accessibility Audit', 'Cumplimiento WCAG', '2026-08-10', NULL,4),
+('Server Hardening', 'Optimización de seguridad en Linux', '2026-09-01', NULL,5);
 
 INSERT INTO project_users (project_id, user_id) VALUES
-(1,3),(2,3),(3,3),(4,3),(5,3),(6,3),(7,3),
-(1,1),
-(2,5),
-(3,10),
-(4,15),
-(5,20),
-(9,30),
-(7,22),
-(6,35),
-(9,12),
-(2,40);
+(1,3),(2,3),(3,3),(4,3),(5,3),(6,3),(7,3),(1,1),(2,5),(3,10),(4,15),(5,20),(9,30),(7,22),(6,35),(9,12),(2,40),
+(1, 4), (1, 38), (2, 39), (3, 9), (3, 31), (4, 11), (4, 32), (5, 14), (5, 33);
 
 INSERT INTO timesheets (user_id, project_id, work_date, hours, comment, global_comment, week_id) VALUES
 (3, 1, '2026-06-29', 8.00, 'Desarrollo backend', '', '2026-W27'),
