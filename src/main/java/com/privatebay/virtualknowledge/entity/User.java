@@ -61,6 +61,12 @@ public class User {
 	@JoinColumn(name = "department_id", nullable = false)
 	private Department department;
 	
+	
+	
+	public User() {
+		super();
+	}
+
 	public User(LocalDateTime registrationDate) {
         this.registrationDate = registrationDate;
     }
