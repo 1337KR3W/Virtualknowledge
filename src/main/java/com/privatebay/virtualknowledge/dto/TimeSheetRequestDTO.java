@@ -1,10 +1,11 @@
 package com.privatebay.virtualknowledge.dto;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class TimeSheetRequestDTO {
 	private String weekId;
-	private String[] weekDates;
+	private List<LocalDate> weekDates;
 	private String globalComment;
 	private List<ProjectTimeRowDTO> rows;
 	private Long userId;
@@ -53,11 +54,11 @@ public class TimeSheetRequestDTO {
 		this.userId = userId;
 	}
 
-	public String[] getWeekDates() {
+	public List<LocalDate> getWeekDates() {
 		return weekDates;
 	}
 
-	public void setWeekDates(String[] weekDates) {
+	public void setWeekDates(List<LocalDate> weekDates) {
 		this.weekDates = weekDates;
 	}
 

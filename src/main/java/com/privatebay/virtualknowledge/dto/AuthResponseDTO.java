@@ -1,20 +1,23 @@
 package com.privatebay.virtualknowledge.dto;
 
-import java.util.Set;
-
 public class AuthResponseDTO {
 	private String token;
 	private Long id;
 	private String email;
 	private String name;
-	private Set<String> roles;
+	private String role;
+	private String departmentName;
 
-	public AuthResponseDTO(String token, Long id, String email, String name, Set<String> roles) {
+	public AuthResponseDTO() {
+	}
+
+	public AuthResponseDTO(String token, Long id, String email, String name, String role, String departmentName) {
 		this.token = token;
 		this.id = id;
 		this.email = email;
 		this.name = name;
-		this.roles = roles;
+		this.role = role;
+		this.departmentName = departmentName;
 	}
 
 	public String getToken() {
@@ -49,12 +52,19 @@ public class AuthResponseDTO {
 		this.name = name;
 	}
 
-	public Set<String> getRoles() {
-		return roles;
+	public String getRole() {
+		return role;
 	}
 
-	public void setRoles(Set<String> roles) {
-		this.roles = roles;
+	public void setRole(String role) {
+		this.role = role;
 	}
 
+	public String getDepartmentName() {
+		return departmentName;
+	}
+
+	public void setDepartmentName(String departmentName) {
+		this.departmentName = departmentName;
+	}
 }
