@@ -28,7 +28,7 @@ public class TimeSheet {
 
 	@Column(columnDefinition = "TEXT")
 	private String comment;
-	
+
 	@Column(name = "global_comment", columnDefinition = "TEXT")
 	private String globalComment;
 
@@ -91,7 +91,7 @@ public class TimeSheet {
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
-	
+
 	public String getGlobalComment() {
 		return globalComment;
 	}
