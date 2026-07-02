@@ -1,25 +1,36 @@
 package com.privatebay.virtualknowledge.dto;
 
+import java.util.List;
+
 public class DepartmentResponseDTO {
-    private Long id;
-    private String name;
+	private Long id;
+	private String name;
+	private List<Long> userIds;
 
-    public DepartmentResponseDTO() {
-    }
+	public DepartmentResponseDTO() {
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public List<Long> getUserIds() {
+		return userIds;
+	}
+
+	public void setUserIds(List<Long> userIds) {
+		this.userIds = userIds;
+	}
 }

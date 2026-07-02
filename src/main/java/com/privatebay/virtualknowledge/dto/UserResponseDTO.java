@@ -1,5 +1,7 @@
 package com.privatebay.virtualknowledge.dto;
 
+import com.privatebay.virtualknowledge.entity.User;
+
 public class UserResponseDTO {
     private Long id;
     private String firstName;
@@ -10,6 +12,16 @@ public class UserResponseDTO {
     private String departmentName;
 
     public UserResponseDTO() {
+    }
+    
+    public UserResponseDTO(User user) {
+        this.id = user.getId();
+        this.firstName = user.getFirstName();
+        this.lastName = user.getLastName();
+        this.email = user.getEmail();
+        this.status = user.getStatus().name();
+        this.roleName = user.getRole().getName().name();
+        this.departmentName = user.getDepartment().getName();
     }
 
     public Long getId() {
