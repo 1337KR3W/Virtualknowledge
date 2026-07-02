@@ -1,16 +1,13 @@
 package com.privatebay.virtualknowledge.entity;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
+import java.util.ArrayList;
+import java.util.List;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -24,9 +21,8 @@ public class Department {
 	@Column(nullable = false, length = 100, unique = true)
 	private String name;
 
-	@ManyToMany(mappedBy = "departments")
-	@JsonIgnore
-	private Set<User> users = new HashSet<>();
+	@OneToMany(mappedBy = "department")
+	private List<User> users = new ArrayList<>();
 
 	public Department() {
 	}
@@ -34,6 +30,12 @@ public class Department {
 	public Department(String name) {
 		super();
 		this.name = name;
+	}
+
+	public Department(String name, List<User> users) {
+		super();
+		this.name = name;
+		this.users = users;
 	}
 
 	public String getName() {
@@ -44,11 +46,11 @@ public class Department {
 		this.name = name;
 	}
 
-	public Set<User> getUsers() {
+	public List<User> getUsers() {
 		return users;
 	}
 
-	public void setUsers(Set<User> users) {
+	public void setUsers(List<User> users) {
 		this.users = users;
 	}
 
