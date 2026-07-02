@@ -1,9 +1,11 @@
 package com.privatebay.virtualknowledge.entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -31,12 +33,12 @@ public class Project {
 	private String description;
 
 	@Column(name = "start_date", nullable = false)
-	private LocalDate startDate;
+	private LocalDateTime startDate;
 
 	@Column(name = "end_date")
-	private LocalDate endDate;
+	private LocalDateTime endDate;
 
-	@ManyToMany(fetch = FetchType.LAZY)
+	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	@JoinTable(name = "project_users", joinColumns = @JoinColumn(name = "project_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
 	private Set<User> users = new HashSet<>();
 
@@ -49,12 +51,12 @@ public class Project {
 
 	}
 
-	public Project(LocalDate startDate) {
+	public Project(LocalDateTime startDate) {
 		super();
-		this.startDate = LocalDate.now();
+		this.startDate = LocalDateTime.now();
 	}
 
-	public Project(String name, String description, LocalDate startDate, LocalDate endDate) {
+	public Project(String name, String description, LocalDateTime startDate, LocalDateTime endDate) {
 		super();
 		this.name = name;
 		this.description = description;
@@ -65,7 +67,7 @@ public class Project {
 	public Set<User> getUsers() {
 		return users;
 	}
-	
+
 	public void setUsers(Set<User> users) {
 		this.users = users;
 	}
@@ -90,19 +92,19 @@ public class Project {
 		return id;
 	}
 
-	public LocalDate getStartDate() {
+	public LocalDateTime getStartDate() {
 		return startDate;
 	}
 
-	public void setStartDate(LocalDate startDate) {
+	public void setStartDate(LocalDateTime startDate) {
 		this.startDate = startDate;
 	}
 
-	public LocalDate getEndDate() {
+	public LocalDateTime getEndDate() {
 		return endDate;
 	}
 
-	public void setEndDate(LocalDate endDate) {
+	public void setEndDate(LocalDateTime endDate) {
 		this.endDate = endDate;
 	}
 
@@ -112,6 +114,14 @@ public class Project {
 
 	public void setDepartment(Department department) {
 		this.department = department;
+	}
+	
+	public void addUser(User user) {
+	    this.users.add(user);
+	}
+
+	public void removeUser(User user) {
+	    this.users.remove(user);
 	}
 
 }
