@@ -1,69 +1,43 @@
 package com.privatebay.virtualknowledge.service;
 
+import com.privatebay.virtualknowledge.dto.*;
+import com.privatebay.virtualknowledge.entity.*;
+import com.privatebay.virtualknowledge.mapper.TimeSheetMapper;
+import com.privatebay.virtualknowledge.repository.*;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.privatebay.virtualknowledge.dto.*;
-import com.privatebay.virtualknowledge.entity.*;
-import com.privatebay.virtualknowledge.repository.*;
-
-import jakarta.transaction.Transactional;
+import java.util.List;
 
 @Service
 public class TimeSheetService {
-	@Autowired
-	private TimeSheetRepository timeSheetRepository;
-	@Autowired
-	private UserRepository userRepository;
-	@Autowired
-	private ProjectRepository projectRepository;
 
+	private final TimeSheetRepository timeSheetRepository;
+	private final UserRepository userRepository;
+	private final ProjectRepository projectRepository;
+	private final TimeSheetMapper timeSheetMapper;
+
+	public TimeSheetService(TimeSheetRepository timeSheetRepository, UserRepository userRepository,
+			ProjectRepository projectRepository, TimeSheetMapper timeSheetMapper) {
+		this.timeSheetRepository = timeSheetRepository;
+		this.userRepository = userRepository;
+		this.projectRepository = projectRepository;
+		this.timeSheetMapper = timeSheetMapper;
+	}
+
+	@Transactional(readOnly = true)
 	public TimeSheetRequestDTO getTimeSheetByWeek(Long userId, String weekId) {
 		LocalDate monday = LocalDate.parse(weekId + "-1", DateTimeFormatter.ISO_WEEK_DATE);
 		LocalDate sunday = monday.plusDays(6);
 
 		List<TimeSheet> entries = timeSheetRepository.findByUserIdAndWorkDateBetween(userId, monday, sunday);
-		System.out.println("DEBUG: Semana buscada: " + weekId);
-		System.out.println("DEBUG: Fechas calculadas -> Lunes: " + monday + " Domingo: " + sunday);
-		System.out.println("DEBUG: Entradas totales encontradas: " + entries.size());
 
-		System.out.println("DEBUG: Registros encontrados en BD para la semana: " + entries.size());
+		String globalComment = entries.stream().map(TimeSheet::getGlobalComment).filter(c -> c != null && !c.isBlank())
+				.findFirst().orElse("");
 
-		Map<Long, ProjectTimeRowDTO> rowsMap = new HashMap<>();
-		String globalCommentExtracted = "";
-
-		for (TimeSheet ts : entries) {
-
-			if (ts.getGlobalComment() != null && !ts.getGlobalComment().trim().isEmpty()
-					&& globalCommentExtracted.isEmpty()) {
-				globalCommentExtracted = ts.getGlobalComment().trim();
-			}
-
-			Long pid = ts.getProject().getId();
-			rowsMap.putIfAbsent(pid,
-					new ProjectTimeRowDTO(pid, ts.getProject().getName(), ts.getProject().getDepartment().getName()));
-
-			TimeEntryDTO entry = new TimeEntryDTO(ts.getHours(), ts.getComment());
-			String dayKey = ts.getWorkDate().getDayOfWeek().name().substring(0, 3);
-
-			rowsMap.get(pid).addEntry(dayKey, entry);
-		}
-
-		TimeSheetRequestDTO response = new TimeSheetRequestDTO();
-		response.setWeekId(weekId);
-		response.setUserId(userId);
-		response.setGlobalComment(globalCommentExtracted);
-		response.setRows(new ArrayList<>(rowsMap.values()));
-
-		System.out.println("DEBUG: Enviando al Front-End -> GlobalComment: [" + response.getGlobalComment() + "]");
-		System.out.println("DEBUG: Tamaño de la lista de proyectos en el DTO final: " + response.getRows().size());
-
-		return response;
+		return timeSheetMapper.toDTO(userId, weekId, globalComment, entries);
 	}
 
 	@Transactional
@@ -74,14 +48,14 @@ public class TimeSheetService {
 		timeSheetRepository.deleteByUserIdAndWorkDateBetween(request.getUserId(), monday, sunday);
 
 		User user = userRepository.findById(request.getUserId())
-				.orElseThrow(() -> new RuntimeException("User not found"));
+				.orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
 		for (ProjectTimeRowDTO row : request.getRows()) {
 			Project project = projectRepository.findById(row.getPid())
-					.orElseThrow(() -> new RuntimeException("Project not found"));
+					.orElseThrow(() -> new RuntimeException("Proyecto no encontrado"));
 
 			row.getDays().forEach((dayKey, entry) -> {
-				if (entry != null && entry.getHours() != null && entry.getHours().compareTo(BigDecimal.ZERO) > 0) {
+				if (isValidEntry(entry)) {
 					TimeSheet ts = new TimeSheet();
 					ts.setUser(user);
 					ts.setProject(project);
@@ -90,11 +64,14 @@ public class TimeSheetService {
 					ts.setWorkDate(calculateDate(monday, dayKey));
 					ts.setGlobalComment(request.getGlobalComment());
 					ts.setWeekId(request.getWeekId());
-
 					timeSheetRepository.save(ts);
 				}
 			});
 		}
+	}
+
+	private boolean isValidEntry(TimeEntryDTO entry) {
+		return entry != null && entry.getHours() != null && entry.getHours().compareTo(BigDecimal.ZERO) >= 0;
 	}
 
 	private LocalDate calculateDate(LocalDate monday, String dayKey) {
@@ -109,5 +86,4 @@ public class TimeSheetService {
 		default -> monday;
 		};
 	}
-
 }
