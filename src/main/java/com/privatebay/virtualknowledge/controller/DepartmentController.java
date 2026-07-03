@@ -22,31 +22,31 @@ public class DepartmentController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<List<DepartmentResponseDTO>> getAll() {
         return ResponseEntity.ok(departmentService.getAllDepartments());
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<DepartmentResponseDTO> create(@RequestBody DepartmentRequestDTO request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(departmentService.createDepartment(request));
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<DepartmentResponseDTO> getDepartmentById(@PathVariable Long id) {
         return ResponseEntity.ok(departmentService.getDepartment(id));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<DepartmentResponseDTO> update(@PathVariable Long id, @RequestBody DepartmentRequestDTO request) {
         return ResponseEntity.ok(departmentService.updateDepartment(id, request));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         departmentService.deleteDepartment(id);
         return ResponseEntity.noContent().build();

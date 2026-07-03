@@ -16,55 +16,56 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:4200")
 public class ProjectController {
 
-    private final ProjectService projectService;
-    private final SecurityService securityService;
+	private final ProjectService projectService;
+	private final SecurityService securityService;
 
-    public ProjectController(ProjectService projectService, SecurityService securityService) {
-        this.projectService = projectService;
-        this.securityService = securityService;
-    }
+	public ProjectController(ProjectService projectService, SecurityService securityService) {
+		this.projectService = projectService;
+		this.securityService = securityService;
+	}
 
-    @GetMapping("/my-projects")
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    public ResponseEntity<List<ProjectResponseDTO>> getProjectsByUserId() {
-        Long userId = securityService.getCurrentUserId();
-        return ResponseEntity.ok(projectService.findProjectsByUserId(userId));
-    }
+	@GetMapping("/my-projects")
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
+	public ResponseEntity<List<ProjectResponseDTO>> getProjectsByUserId() {
+		Long userId = securityService.getCurrentUserId();
+		return ResponseEntity.ok(projectService.findProjectsByUserId(userId));
+	}
 
-    @GetMapping("/my-projects/week/{weekId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    public ResponseEntity<List<ProjectResponseDTO>> getProjectsByWeek(@PathVariable String weekId) {
-        Long userId = securityService.getCurrentUserId();
-        return ResponseEntity.ok(projectService.getProjectsForWeek(userId, weekId));
-    }
+	@GetMapping("/my-projects/week/{weekId}")
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
+	public ResponseEntity<List<ProjectResponseDTO>> getProjectsByWeek(@PathVariable String weekId) {
+		Long userId = securityService.getCurrentUserId();
+		return ResponseEntity.ok(projectService.getProjectsForWeek(userId, weekId));
+	}
 
-    @PostMapping("/admin/create")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ProjectResponseDTO> createProjectByAdmin(@RequestBody ProjectRequestDTO request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(projectService.createProject(request));
-    }
+	@PostMapping("/admin/create")
+	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+	public ResponseEntity<ProjectResponseDTO> createProjectByAdmin(@RequestBody ProjectRequestDTO request) {
+		return ResponseEntity.status(HttpStatus.CREATED).body(projectService.createProject(request));
+	}
 
-    @GetMapping("/admin/all")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<ProjectResponseDTO>> getAllProjects() {
-        return ResponseEntity.ok(projectService.findAllProjects());
-    }
-    
-    @GetMapping("/{id}")
-    public ResponseEntity<ProjectResponseDTO> getProjectById(@PathVariable Long id) {
-        return ResponseEntity.ok(projectService.getProjectById(id));
-    }
+	@GetMapping("/admin/all")
+	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+	public ResponseEntity<List<ProjectResponseDTO>> getAllProjects() {
+		return ResponseEntity.ok(projectService.findAllProjects());
+	}
 
-    @PutMapping("/admin/edit/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ProjectResponseDTO> updateProject(@PathVariable Long id, @RequestBody ProjectRequestDTO request) {
-        return ResponseEntity.ok(projectService.updateProject(id, request));
-    }
+	@GetMapping("/{id}")
+	public ResponseEntity<ProjectResponseDTO> getProjectById(@PathVariable Long id) {
+		return ResponseEntity.ok(projectService.getProjectById(id));
+	}
 
-    @DeleteMapping("/admin/delete/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deleteProject(@PathVariable Long id) {
-        projectService.deleteProject(id);
-        return ResponseEntity.noContent().build();
-    }
+	@PutMapping("/admin/edit/{id}")
+	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+	public ResponseEntity<ProjectResponseDTO> updateProject(@PathVariable Long id,
+			@RequestBody ProjectRequestDTO request) {
+		return ResponseEntity.ok(projectService.updateProject(id, request));
+	}
+
+	@DeleteMapping("/admin/delete/{id}")
+	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+	public ResponseEntity<Void> deleteProject(@PathVariable Long id) {
+		projectService.deleteProject(id);
+		return ResponseEntity.noContent().build();
+	}
 }

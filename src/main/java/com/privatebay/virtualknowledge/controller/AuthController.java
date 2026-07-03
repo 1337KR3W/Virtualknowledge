@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -47,14 +48,14 @@ public class AuthController {
 	@PostMapping("/register")
 	public AuthResponseDTO register(@RequestBody UserRequestDTO request) {
 		if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El email ya está registrado");
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already registered");
 		}
 
 		Role role = roleRepository.findById(request.getRoleId())
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Rol no encontrado"));
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Rol not found"));
 
 		Department department = departmentRepository.findById(request.getDepartmentId())
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Departamento no encontrado"));
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Department not found"));
 
 		User user = new User();
 		user.setFirstName(request.getFirstName());
@@ -68,7 +69,7 @@ public class AuthController {
 		User savedUser = userRepository.save(user);
 
 		String token = jwtService.generateToken(savedUser.getEmail(), savedUser.getId(), Collections.singletonList(
-				new org.springframework.security.core.authority.SimpleGrantedAuthority(role.getName().name())));
+				new SimpleGrantedAuthority(role.getName().name())));
 
 		return new AuthResponseDTO(token, savedUser.getId(), savedUser.getEmail(), savedUser.getFirstName(),
 				savedUser.getRole().getName().name(), savedUser.getDepartment().getName());
@@ -83,7 +84,6 @@ public class AuthController {
 		User user = userRepository.findByEmail(userDetails.getUsername()).orElseThrow();
 
 		String token = jwtService.generateToken(user.getEmail(), user.getId(), authentication.getAuthorities());
-
 		return new AuthResponseDTO(token, user.getId(), user.getEmail(), user.getFirstName(),
 				user.getRole().getName().name(), user.getDepartment().getName());
 	}
