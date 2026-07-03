@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -13,7 +14,10 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import com.privatebay.virtualknowledge.service.JwtService;
+
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
@@ -46,15 +50,20 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 			if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 				UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
 
+				List<String> roles = jwtService.extractRoles(jwt);
+				System.out.println("DEBUG: Roles extraídos del token: " + roles);
+				List<SimpleGrantedAuthority> authorities = roles.stream().map(SimpleGrantedAuthority::new)
+						.collect(Collectors.toList());
+				System.out.println("DEBUG: Autoridades creadas: " + authorities);
+
 				UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails,
-						null, userDetails.getAuthorities());
+						null, authorities);
 
 				authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
 				SecurityContextHolder.getContext().setAuthentication(authToken);
 			}
 		} catch (Exception e) {
-
 			logger.error("No se pudo establecer la autenticación de usuario", e);
 		}
 
