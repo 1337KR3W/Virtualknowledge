@@ -1,6 +1,7 @@
 package com.privatebay.virtualknowledge.entity;
 
-import java.time.LocalDateTime;
+
+import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -44,7 +45,7 @@ public class User {
 	private String password;
 
 	@Column(name = "registration_date", nullable = false, updatable = false)
-	private LocalDateTime registrationDate = LocalDateTime.now();
+	private ZonedDateTime registrationDate = ZonedDateTime.now();
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false, length = 20)
@@ -67,11 +68,11 @@ public class User {
 		super();
 	}
 
-	public User(LocalDateTime registrationDate) {
+	public User(ZonedDateTime registrationDate) {
         this.registrationDate = registrationDate;
     }
 
-	public User(String firstName,String lastName, String email, String password, Role role,LocalDateTime registrationDate,
+	public User(String firstName,String lastName, String email, String password, Role role,ZonedDateTime registrationDate,
 			UserStatus status) {
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -118,11 +119,11 @@ public class User {
 		return id;
 	}
 
-	public LocalDateTime getRegistrationDate() {
+	public ZonedDateTime getRegistrationDate() {
 		return registrationDate;
 	}
 
-	public void setRegistrationDate(LocalDateTime registrationDate) {
+	public void setRegistrationDate(ZonedDateTime registrationDate) {
 		this.registrationDate = registrationDate;
 	}
 
