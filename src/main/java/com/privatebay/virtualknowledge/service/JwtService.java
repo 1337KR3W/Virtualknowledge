@@ -27,11 +27,19 @@ public class JwtService {
 	}
 
 	public String generateToken(String email, Long userId, Collection<? extends GrantedAuthority> authorities) {
-		List<String> roles = authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
+		List<String> roles = authorities.stream().map(authority -> {
+			String auth = authority.getAuthority();
+			return auth.startsWith("ROLE_") ? auth : "ROLE_" + auth;
+		}).collect(Collectors.toList());
 
-		return Jwts.builder().setSubject(email).claim("userId", userId).claim("roles", roles).setIssuedAt(new Date())
-				.setExpiration(new Date(System.currentTimeMillis() + expirationTime))
-				.signWith(getSigningKey(), SignatureAlgorithm.HS256).compact();
+		return Jwts.builder()
+	            .setSubject(email)
+	            .claim("userId", userId)
+	            .claim("roles", roles)
+	            .setIssuedAt(new Date())
+	            .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
+	            .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+	            .compact();
 	}
 
 	public List<String> extractRoles(String token) {

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.temporal.WeekFields;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,14 +39,14 @@ public class ProjectService {
 	@Transactional(readOnly = true)
 	public ProjectResponseDTO getProjectById(Long id) {
 		Project project = projectRepository.findById(id)
-				.orElseThrow(() -> new RuntimeException("Proyecto no encontrado"));
+				.orElseThrow(() -> new RuntimeException("Project not found"));
 		return projectMapper.toResponseDTO(project);
 	}
 
 	@Transactional
 	public ProjectResponseDTO createProject(ProjectRequestDTO dto) {
 		Department dept = departmentRepository.findById(dto.getDepartmentId())
-				.orElseThrow(() -> new IllegalArgumentException("Departamento no encontrado"));
+				.orElseThrow(() -> new IllegalArgumentException("Department not found"));
 
 		Project project = new Project();
 		project.setName(dto.getName());
@@ -64,14 +65,23 @@ public class ProjectService {
 	@Transactional
 	public ProjectResponseDTO updateProject(Long id, ProjectRequestDTO dto) {
 		Project project = projectRepository.findByIdWithUsers(id)
-				.orElseThrow(() -> new RuntimeException("Proyecto no encontrado"));
+				.orElseThrow(() -> new RuntimeException("Project not found"));
+		
+		if (dto.getDepartmentId() == null) {
+	        throw new IllegalArgumentException("Department ID is required");
+	    }
 
 		project.setName(dto.getName());
 		project.setDescription(dto.getDescription());
 		project.setStartDate(dto.getStartDate());
 		project.setEndDate(dto.getEndDate());
+		
+		Department dept = departmentRepository.findById(dto.getDepartmentId())
+	            .orElseThrow(() -> new RuntimeException("Department not found"));
+	    project.setDepartment(dept);
+		
 		project.setDepartment(departmentRepository.findById(dto.getDepartmentId())
-				.orElseThrow(() -> new RuntimeException("Departamento no encontrado")));
+				.orElseThrow(() -> new RuntimeException("Department not found")));
 
 		if (dto.getUserIds() != null) {
 			project.setUsers(new HashSet<>(userRepository.findAllById(dto.getUserIds())));
@@ -82,31 +92,27 @@ public class ProjectService {
 
 	public void deleteProject(Long id) {
 		if (!projectRepository.existsById(id))
-			throw new RuntimeException("Proyecto no encontrado");
+			throw new RuntimeException("Project not found");
 		projectRepository.deleteById(id);
 	}
-	
+
 	@Transactional(readOnly = true)
-    public List<ProjectResponseDTO> findProjectsByUserId(Long userId) {
-        return projectRepository.findProjectByUserId(userId).stream()
-                .map(projectMapper::toResponseDTO)
-                .collect(Collectors.toList());
-    }
-	
+	public List<ProjectResponseDTO> findProjectsByUserId(Long userId) {
+		return projectRepository.findProjectByUserId(userId).stream().map(projectMapper::toResponseDTO)
+				.collect(Collectors.toList());
+	}
+
 	@Transactional(readOnly = true)
-    public List<ProjectResponseDTO> getProjectsForWeek(Long userId, String weekId) {
-        String[] parts = weekId.split("-W");
-        int year = Integer.parseInt(parts[0]);
-        int week = Integer.parseInt(parts[1]);
-        
-        LocalDate weekStart = LocalDate.of(year, 1, 1)
-                .with(java.time.temporal.WeekFields.ISO.weekOfYear(), week)
-                .with(java.time.temporal.WeekFields.ISO.dayOfWeek(), 1);
-        LocalDate weekEnd = weekStart.plusDays(6);
-        
-        List<Project> projects = projectRepository.findActiveProjectsInWeek(userId, weekStart, weekEnd);
-        return projects.stream()
-                .map(projectMapper::toResponseDTO)
-                .collect(Collectors.toList());
-    }
+	public List<ProjectResponseDTO> getProjectsForWeek(Long userId, String weekId) {
+		String[] parts = weekId.split("-W");
+		int year = Integer.parseInt(parts[0]);
+		int week = Integer.parseInt(parts[1]);
+
+		LocalDate weekStart = LocalDate.of(year, 1, 1).with(WeekFields.ISO.weekOfYear(), week)
+				.with(WeekFields.ISO.dayOfWeek(), 1);
+		LocalDate weekEnd = weekStart.plusDays(6);
+
+		List<Project> projects = projectRepository.findActiveProjectsInWeek(userId, weekStart, weekEnd);
+		return projects.stream().map(projectMapper::toResponseDTO).collect(Collectors.toList());
+	}
 }
