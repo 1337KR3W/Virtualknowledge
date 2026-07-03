@@ -1,6 +1,7 @@
 package com.privatebay.virtualknowledge.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class ProjectResponseDTO {
 	private Long id;
@@ -9,6 +10,8 @@ public class ProjectResponseDTO {
 	private LocalDateTime startDate;
 	private LocalDateTime endDate;
 	private String departmentName;
+	private Long departmentId;
+	private List<Long> userIds;
 
 	public ProjectResponseDTO() {
 	}
@@ -59,5 +62,21 @@ public class ProjectResponseDTO {
 
 	public void setDepartmentName(String departmentName) {
 		this.departmentName = departmentName;
+	}
+
+	public Long getDepartmentId() {
+		return departmentId;
+	}
+
+	public void setDepartmentId(Long departmentId) {
+		this.departmentId = departmentId;
+	}
+
+	public List<Long> getUserIds() {
+		return userIds;
+	}
+
+	public void setUserIds(List<Long> userIds) {
+		this.userIds = userIds;
 	}
 }

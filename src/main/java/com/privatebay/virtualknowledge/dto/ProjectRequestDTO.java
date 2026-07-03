@@ -1,8 +1,11 @@
 package com.privatebay.virtualknowledge.dto;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class ProjectRequestDTO {
 	private String name;
