@@ -20,10 +20,12 @@ public class UserMapper {
         
         if (user.getRole() != null) {
             dto.setRoleName(user.getRole().getName().name());
+            dto.setRoleId(user.getRole().getId());
         }
         
         if (user.getDepartment() != null) {
             dto.setDepartmentName(user.getDepartment().getName());
+            dto.setDepartmentId(user.getDepartment().getId());
         }
         
         return dto;

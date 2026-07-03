@@ -2,6 +2,9 @@ package com.privatebay.virtualknowledge.mapper;
 
 import com.privatebay.virtualknowledge.dto.ProjectResponseDTO;
 import com.privatebay.virtualknowledge.entity.Project;
+
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Component;
 
 @Component
@@ -20,7 +23,16 @@ public class ProjectMapper {
 
 		if (project.getDepartment() != null) {
 			dto.setDepartmentName(project.getDepartment().getName());
+			dto.setDepartmentId(project.getDepartment().getId());
 		}
+		
+		if (project.getUsers() != null) {
+            dto.setUserIds(project.getUsers().stream()
+                .map(user -> user.getId())
+                .collect(Collectors.toList()));
+        } else {
+            dto.setUserIds(new java.util.ArrayList<>());
+        }
 
 		return dto;
 	}
