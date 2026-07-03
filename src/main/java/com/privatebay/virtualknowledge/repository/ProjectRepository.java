@@ -14,8 +14,9 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 	@Query("SELECT DISTINCT p FROM Project p JOIN p.users u WHERE u.id = :userId")
 	List<Project> findProjectByUserId(@Param("userId") Long userId);
 
-	@Query("SELECT DISTINCT p FROM Project p JOIN p.users u WHERE u.id = :userId " + "AND p.startDate <= :weekEnd "
-			+ "AND (p.endDate IS NULL OR p.endDate >= :weekStart)")
+	@Query("SELECT DISTINCT p FROM Project p JOIN p.users u WHERE u.id = :userId "
+			+ "AND FUNCTION('DATE', p.startDate) <= :weekEnd "
+			+ "AND (p.endDate IS NULL OR FUNCTION('DATE', p.endDate) >= :weekStart)")
 	List<Project> findActiveProjectsInWeek(@Param("userId") Long userId, @Param("weekStart") LocalDate weekStart,
 			@Param("weekEnd") LocalDate weekEnd);
 
