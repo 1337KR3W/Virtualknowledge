@@ -21,7 +21,7 @@ public class SecurityService {
 
 		if (authentication == null || !authentication.isAuthenticated()
 				|| "anonymousUser".equals(authentication.getPrincipal())) {
-			throw new RuntimeException("No hay un usuario autenticado en el contexto de seguridad");
+			throw new RuntimeException("No authenticated user in sec context");
 		}
 
 		Object principal = authentication.getPrincipal();
@@ -29,15 +29,15 @@ public class SecurityService {
 		if (principal instanceof UserDetails) {
 			String email = ((UserDetails) principal).getUsername();
 			return userRepository.findByEmail(email).map(User::getId)
-					.orElseThrow(() -> new RuntimeException("Usuario no encontrado en la base de datos: " + email));
+					.orElseThrow(() -> new RuntimeException("User not found in DB: " + email));
 		}
 
-		throw new RuntimeException("El principal de autenticación no es del tipo esperado");
+		throw new RuntimeException("Auth principal has unexpected type");
 	}
 
 	public User getCurrentUser() {
 		Long id = getCurrentUserId();
 		return userRepository.findById(id)
-				.orElseThrow(() -> new RuntimeException("Entidad de usuario no encontrada para el ID: " + id));
+				.orElseThrow(() -> new RuntimeException("User not found for ID: " + id));
 	}
 }

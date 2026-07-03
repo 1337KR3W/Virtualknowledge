@@ -36,14 +36,14 @@ public class DepartmentService {
 	@Transactional(readOnly = true)
 	public DepartmentResponseDTO getDepartment(Long id) {
 		return departmentRepository.findById(id).map(departmentMapper::toResponseDTO)
-				.orElseThrow(() -> new RuntimeException("Departamento no encontrado con ID: " + id));
+				.orElseThrow(() -> new RuntimeException("Department not found with ID: " + id));
 	}
 
 	@Transactional
 	public DepartmentResponseDTO createDepartment(DepartmentRequestDTO dto) {
 		List<Department> existing = departmentRepository.findByName(dto.getName());
 		if (!existing.isEmpty()) {
-			throw new IllegalArgumentException("El departamento ya existe.");
+			throw new IllegalArgumentException("Department already exists.");
 		}
 
 		Department department = new Department();
@@ -56,7 +56,7 @@ public class DepartmentService {
 	@Transactional
 	public DepartmentResponseDTO updateDepartment(Long id, DepartmentRequestDTO dto) {
 		Department dept = departmentRepository.findById(id)
-				.orElseThrow(() -> new RuntimeException("Departamento no encontrado con ID: " + id));
+				.orElseThrow(() -> new RuntimeException("Department not found with ID: " + id));
 
 		dept.setName(dto.getName());
 		assignUsersToDepartment(dept, dto.getUserIds());
@@ -75,7 +75,7 @@ public class DepartmentService {
 
 	public void deleteDepartment(Long id) {
 		if (!departmentRepository.existsById(id)) {
-			throw new RuntimeException("Departamento no encontrado con ID: " + id);
+			throw new RuntimeException("Department not found with ID: " + id);
 		}
 		departmentRepository.deleteById(id);
 	}

@@ -1,7 +1,5 @@
 package com.privatebay.virtualknowledge.service;
 
-import com.privatebay.virtualknowledge.dto.ProjectRequestDTO;
-import com.privatebay.virtualknowledge.dto.ProjectResponseDTO;
 import com.privatebay.virtualknowledge.dto.UserRequestDTO;
 import com.privatebay.virtualknowledge.dto.UserResponseDTO;
 import com.privatebay.virtualknowledge.entity.*;
@@ -11,9 +9,7 @@ import com.privatebay.virtualknowledge.repository.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,15 +34,15 @@ public class UserService {
 	@Transactional
 	public void registerUser(UserRequestDTO request) {
 		if (request.getRoleId() == null) {
-			throw new RuntimeException("El rol es obligatorio");
+			throw new RuntimeException("Role is required");
 		}
 		Role role = roleRepository.findById(request.getRoleId())
-				.orElseThrow(() -> new RuntimeException("Rol no encontrado"));
+				.orElseThrow(() -> new RuntimeException("Role not found"));
 
 		Department department = null;
 		if (request.getDepartmentId() != null && request.getDepartmentId() > 0) {
 			department = departmentRepository.findById(request.getDepartmentId())
-					.orElseThrow(() -> new RuntimeException("Departamento no encontrado"));
+					.orElseThrow(() -> new RuntimeException("Department not found"));
 		}
 
 		User user = new User();
@@ -73,7 +69,7 @@ public class UserService {
 	@Transactional(readOnly = true)
 	public UserResponseDTO findById(Long id) {
 		return userRepository.findById(id).map(userMapper::toResponseDTO)
-				.orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+				.orElseThrow(() -> new RuntimeException("User not found"));
 	}
 
 	public boolean existsByEmail(String email) {
@@ -89,7 +85,7 @@ public class UserService {
 	@Transactional
 	public void deleteUser(Long id) {
 
-		User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+		User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
 
 		if (user.getProjects() != null) {
 			for (Project project : user.getProjects()) {
@@ -104,7 +100,7 @@ public class UserService {
 
 	@Transactional
 	public UserResponseDTO updateUser(Long id, UserRequestDTO dto) {
-		User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+		User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
 		user.setFirstName(dto.getFirstName());
 		user.setLastName(dto.getLastName());
 		user.setEmail(dto.getEmail());
@@ -117,13 +113,13 @@ public class UserService {
 
 		if (dto.getRoleId() != null) {
 			Role role = roleRepository.findById(dto.getRoleId())
-					.orElseThrow(() -> new RuntimeException("Rol no encontrado"));
+					.orElseThrow(() -> new RuntimeException("Role not found"));
 			user.setRole(role);
 		}
 
 		if (dto.getDepartmentId() != null) {
 			Department dept = departmentRepository.findById(dto.getDepartmentId())
-					.orElseThrow(() -> new RuntimeException("Departamento no encontrado"));
+					.orElseThrow(() -> new RuntimeException("Department not found"));
 			user.setDepartment(dept);
 		}
 

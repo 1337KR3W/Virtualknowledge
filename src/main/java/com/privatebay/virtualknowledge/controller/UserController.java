@@ -1,7 +1,5 @@
 package com.privatebay.virtualknowledge.controller;
 
-import com.privatebay.virtualknowledge.dto.ProjectRequestDTO;
-import com.privatebay.virtualknowledge.dto.ProjectResponseDTO;
 import com.privatebay.virtualknowledge.dto.UserRequestDTO;
 import com.privatebay.virtualknowledge.dto.UserResponseDTO;
 import com.privatebay.virtualknowledge.service.UserService;

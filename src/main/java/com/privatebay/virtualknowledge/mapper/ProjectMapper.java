@@ -3,6 +3,7 @@ package com.privatebay.virtualknowledge.mapper;
 import com.privatebay.virtualknowledge.dto.ProjectResponseDTO;
 import com.privatebay.virtualknowledge.entity.Project;
 
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
@@ -31,7 +32,7 @@ public class ProjectMapper {
                 .map(user -> user.getId())
                 .collect(Collectors.toList()));
         } else {
-            dto.setUserIds(new java.util.ArrayList<>());
+            dto.setUserIds(new ArrayList<>());
         }
 
 		return dto;

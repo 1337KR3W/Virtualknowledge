@@ -14,21 +14,21 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(AuthenticationException.class)
 	public ResponseEntity<ErrorResponse> handleAuthException(AuthenticationException ex) {
 		ErrorResponse error = new ErrorResponse(LocalDateTime.now(), HttpStatus.UNAUTHORIZED.value(),
-				"Credenciales inválidas", "El email o la contraseña son incorrectos");
+				"Invalid credentials", "Invalid password/email");
 		return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
 	}
 
 	@ExceptionHandler(RuntimeException.class)
 	public ResponseEntity<ErrorResponse> handleGeneralException(RuntimeException ex) {
 		ErrorResponse error = new ErrorResponse(LocalDateTime.now(), HttpStatus.BAD_REQUEST.value(),
-				"Error en la operación", ex.getMessage());
+				"Error ", ex.getMessage());
 		return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(AccessDeniedException.class)
 	public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex) {
-		ErrorResponse error = new ErrorResponse(LocalDateTime.now(), HttpStatus.FORBIDDEN.value(), "Acceso denegado",
-				"No tienes permisos suficientes para realizar esta acción");
+		ErrorResponse error = new ErrorResponse(LocalDateTime.now(), HttpStatus.FORBIDDEN.value(), "Denied access",
+				"Need more privileges");
 		return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
 	}
 }
