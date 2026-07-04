@@ -9,7 +9,7 @@ import com.privatebay.virtualknowledge.repository.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,7 +50,7 @@ public class UserService {
 		user.setLastName(request.getLastName());
 		user.setEmail(request.getEmail());
 		user.setPassword(passwordEncoder.encode(request.getPassword()));
-		user.setRegistrationDate(ZonedDateTime.now());
+		user.setRegistrationDate(LocalDateTime.now());
 
 		user.setStatus(request.getStatus() != null ? UserStatus.valueOf(request.getStatus().toUpperCase())
 				: UserStatus.ACTIVE);
