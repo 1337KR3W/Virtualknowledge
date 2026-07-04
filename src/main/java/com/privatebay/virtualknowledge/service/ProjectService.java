@@ -97,9 +97,6 @@ public class ProjectService {
 		Department dept = departmentRepository.findById(dto.getDepartmentId())
 	            .orElseThrow(() -> new RuntimeException("Department not found"));
 	    project.setDepartment(dept);
-		
-		project.setDepartment(departmentRepository.findById(dto.getDepartmentId())
-				.orElseThrow(() -> new RuntimeException("Department not found")));
 
 		if (dto.getUserIds() != null) {
 			project.setUsers(new HashSet<>(userRepository.findAllById(dto.getUserIds())));

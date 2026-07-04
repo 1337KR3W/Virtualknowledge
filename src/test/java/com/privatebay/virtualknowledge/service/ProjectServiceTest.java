@@ -94,5 +94,55 @@ class ProjectServiceTest {
 		verify(projectRepository).existsByName(null);
 	    verify(projectRepository, never()).save(any(Project.class));
 	}
+	
+	@Test
+    void getProjectById_ShouldReturnDTO_WhenProjectExists() {
+        Project project = new Project();
+        when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
+        when(projectMapper.toResponseDTO(project)).thenReturn(new ProjectResponseDTO());
+
+        ProjectResponseDTO result = projectService.getProjectById(1L);
+
+        assertNotNull(result);
+        verify(projectRepository).findById(1L);
+    }
+
+    @Test
+    void deleteProject_ShouldDelete_WhenProjectExists() {
+        when(projectRepository.existsById(1L)).thenReturn(true);
+        
+        projectService.deleteProject(1L);
+        
+        verify(projectRepository).deleteById(1L);
+    }
+
+    @Test
+    void updateProject_ShouldUpdate_WhenDataIsValid() {
+
+        Project existingProject = new Project();
+        ProjectRequestDTO dto = new ProjectRequestDTO("Updated Name");
+        dto.setStartDate(LocalDateTime.now());
+        dto.setEndDate(LocalDateTime.now().plusDays(1));
+        dto.setDepartmentId(1L);
+
+        when(projectRepository.findByIdWithUsers(1L)).thenReturn(Optional.of(existingProject));
+        when(departmentRepository.findById(1L)).thenReturn(Optional.of(new Department()));
+        when(projectRepository.save(any(Project.class))).thenAnswer(i -> i.getArgument(0));
+        when(projectMapper.toResponseDTO(any(Project.class))).thenReturn(new ProjectResponseDTO());
+
+        ProjectResponseDTO result = projectService.updateProject(1L, dto);
+
+        assertNotNull(result);
+        verify(projectRepository).save(any(Project.class));
+    }
+
+    @Test
+    void updateProject_ShouldThrowException_WhenDatesAreInvalid() {
+        ProjectRequestDTO dto = new ProjectRequestDTO();
+        dto.setStartDate(LocalDateTime.now().plusDays(2));
+        dto.setEndDate(LocalDateTime.now());
+
+        assertThrows(IllegalArgumentException.class, () -> projectService.updateProject(1L, dto));
+    }
 
 }
