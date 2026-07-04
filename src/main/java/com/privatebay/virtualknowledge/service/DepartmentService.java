@@ -45,6 +45,10 @@ public class DepartmentService {
 		if (!existing.isEmpty()) {
 			throw new IllegalArgumentException("Department already exists.");
 		}
+		
+		if (dto.getName() == null || dto.getName().isEmpty()) {
+	        throw new IllegalArgumentException("Department name is required");
+	    }
 
 		Department department = new Department();
 		department.setName(dto.getName());

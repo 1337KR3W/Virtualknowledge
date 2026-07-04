@@ -2,8 +2,10 @@ package com.privatebay.virtualknowledge.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.ArgumentMatchers.*;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -48,5 +50,16 @@ public class DepartmentServiceTest {
         assertNotNull(result);
         assertEquals("Successfull Department", result.getName());
 	}
+	
+	@Test
+	void createDepartment_ShouldThrowException_WhenRequiredNameFieldIsMissing() {
 
+	    DepartmentRequestDTO dto = new DepartmentRequestDTO();
+	    
+	    assertThrows(IllegalArgumentException.class, () -> {
+	        departmentService.createDepartment(dto);
+	    });
+	    
+	    verifyNoInteractions(userRepository);
+	}
 }
