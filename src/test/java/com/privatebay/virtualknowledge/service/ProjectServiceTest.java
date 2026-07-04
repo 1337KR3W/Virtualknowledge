@@ -80,5 +80,19 @@ class ProjectServiceTest {
 		verify(projectRepository, never()).save(any(Project.class));
 	    verifyNoInteractions(departmentRepository);
 	}
+	
+	@Test
+	void createProject_ShouldThrowException_WhenRequiredFieldsAreMissing() {
+		
+		ProjectRequestDTO dto = new ProjectRequestDTO();
+		when(projectRepository.existsByName(any())).thenReturn(false);
+		
+		assertThrows(Exception.class, () -> {
+	        projectService.createProject(dto);
+	    });
+		
+		verify(projectRepository).existsByName(null);
+	    verify(projectRepository, never()).save(any(Project.class));
+	}
 
 }
