@@ -50,6 +50,11 @@ public class UserService {
 			department = departmentRepository.findById(request.getDepartmentId())
 					.orElseThrow(() -> new RuntimeException("Department not found"));
 		}
+		
+		if (request.getFirstName() == null || request.getFirstName().length() < 3 || 
+		        request.getLastName() == null || request.getLastName().length() < 3) {
+		        throw new IllegalArgumentException("First and Last name must have at least 3 characters");
+		    }
 
 		User user = new User();
 		user.setFirstName(request.getFirstName());
