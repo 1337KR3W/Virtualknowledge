@@ -5,6 +5,8 @@ import com.privatebay.virtualknowledge.dto.UserResponseDTO;
 import com.privatebay.virtualknowledge.service.JwtService;
 import com.privatebay.virtualknowledge.service.UserService;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
@@ -19,6 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(UserController.class)
 @Import(SecurityConfig.class)
+@ExtendWith(MockitoExtension.class)
 public class UserControllerTest {
 
 	@Autowired
