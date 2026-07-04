@@ -4,6 +4,7 @@ import com.privatebay.virtualknowledge.dto.UserRequestDTO;
 import com.privatebay.virtualknowledge.dto.UserResponseDTO;
 import com.privatebay.virtualknowledge.entity.*;
 import com.privatebay.virtualknowledge.enums.UserStatus;
+import com.privatebay.virtualknowledge.exception.ConflictException;
 import com.privatebay.virtualknowledge.mapper.UserMapper;
 import com.privatebay.virtualknowledge.repository.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,6 +37,11 @@ public class UserService {
 		if (request.getRoleId() == null) {
 			throw new RuntimeException("Role is required");
 		}
+		
+		if (userRepository.existsByEmail(request.getEmail())) {
+	        throw new ConflictException("Email already in use"); 
+	    }
+		
 		Role role = roleRepository.findById(request.getRoleId())
 				.orElseThrow(() -> new RuntimeException("Role not found"));
 
@@ -101,6 +107,9 @@ public class UserService {
 	@Transactional
 	public UserResponseDTO updateUser(Long id, UserRequestDTO dto) {
 		User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+		if (!user.getEmail().equalsIgnoreCase(dto.getEmail()) && userRepository.existsByEmail(dto.getEmail())) {
+	        throw new ConflictException("Email already in use");
+	    }
 		user.setFirstName(dto.getFirstName());
 		user.setLastName(dto.getLastName());
 		user.setEmail(dto.getEmail());

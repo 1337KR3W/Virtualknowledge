@@ -48,11 +48,11 @@ public class TimeSheetService {
 		timeSheetRepository.deleteByUserIdAndWorkDateBetween(request.getUserId(), monday, sunday);
 
 		User user = userRepository.findById(request.getUserId())
-				.orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+				.orElseThrow(() -> new RuntimeException("User not found"));
 
 		for (ProjectTimeRowDTO row : request.getRows()) {
 			Project project = projectRepository.findById(row.getPid())
-					.orElseThrow(() -> new RuntimeException("Proyecto no encontrado"));
+					.orElseThrow(() -> new RuntimeException("Project not found"));
 
 			row.getDays().forEach((dayKey, entry) -> {
 				if (isValidEntry(entry)) {
