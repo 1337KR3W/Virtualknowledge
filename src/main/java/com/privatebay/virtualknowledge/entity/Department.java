@@ -2,6 +2,8 @@ package com.privatebay.virtualknowledge.entity;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -21,8 +23,11 @@ public class Department {
 	@Column(nullable = false, length = 100, unique = true)
 	private String name;
 
-	@OneToMany(mappedBy = "department")
+	@OneToMany(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<User> users = new ArrayList<>();
+
+	@OneToMany(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Project> projects = new ArrayList<>();
 
 	public Department() {
 	}
@@ -56,6 +61,14 @@ public class Department {
 
 	public Long getId() {
 		return id;
+	}
+
+	public List<Project> getProjects() {
+		return projects;
+	}
+
+	public void setProjects(List<Project> projects) {
+		this.projects = projects;
 	}
 
 }

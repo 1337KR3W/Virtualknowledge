@@ -16,6 +16,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -46,6 +47,9 @@ public class Project {
 	@JoinColumn(name = "department_id", nullable = false)
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private Department department;
+	
+	@OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+	private Set<TimeSheet> timesheets = new HashSet<>();
 
 	public Project() {
 
