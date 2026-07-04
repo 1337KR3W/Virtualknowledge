@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS users (
   status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
   department_id BIGINT NOT NULL,
   role_id BIGINT NOT NULL,
-  CONSTRAINT fk_user_dept FOREIGN KEY (department_id) REFERENCES departments(id),
+  CONSTRAINT fk_user_dept FOREIGN KEY (department_id) REFERENCES departments(id) ON DELETE CASCADE,
   CONSTRAINT fk_user_role FOREIGN KEY (role_id) REFERENCES roles(id)
 );
 
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS projects (
   start_date DATETIME NOT NULL,
   end_date DATETIME,
   department_id BIGINT NOT NULL,
-  CONSTRAINT fk_project_dept FOREIGN KEY (department_id) REFERENCES departments(id)
+  CONSTRAINT fk_project_dept FOREIGN KEY (department_id) REFERENCES departments(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS project_users (
@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS project_users (
   user_id BIGINT NOT NULL,
   PRIMARY KEY (project_id, user_id),
   CONSTRAINT fk_pu_project FOREIGN KEY (project_id) REFERENCES projects(id),
-  CONSTRAINT fk_pu_user FOREIGN KEY (user_id) REFERENCES users(id)
+  CONSTRAINT fk_pu_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS timesheets (
@@ -52,8 +52,8 @@ CREATE TABLE IF NOT EXISTS timesheets (
   comment TEXT,
   global_comment TEXT,
   week_id VARCHAR(10),
-  CONSTRAINT fk_ts_user FOREIGN KEY (user_id) REFERENCES users(id),
-  CONSTRAINT fk_ts_project FOREIGN KEY (project_id) REFERENCES projects(id)
+  CONSTRAINT fk_ts_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  CONSTRAINT fk_ts_project FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
 );
 
 CREATE INDEX idx_ts_user_date ON timesheets(user_id, work_date);
