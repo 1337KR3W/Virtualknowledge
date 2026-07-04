@@ -32,6 +32,13 @@ public class ProjectRequestDTO {
 
 	public ProjectRequestDTO() {
 	}
+	
+
+	public ProjectRequestDTO(@NotBlank @Size(min = 3, max = 150) String name) {
+		super();
+		this.name = name;
+	}
+
 
 	public String getName() {
 		return name;

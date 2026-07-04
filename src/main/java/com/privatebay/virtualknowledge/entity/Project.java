@@ -1,7 +1,6 @@
 package com.privatebay.virtualknowledge.entity;
 
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonProperty;
