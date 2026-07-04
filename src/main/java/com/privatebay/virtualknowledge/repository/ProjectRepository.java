@@ -22,4 +22,6 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
 	@Query("SELECT p FROM Project p LEFT JOIN FETCH p.users WHERE p.id = :id")
 	Optional<Project> findByIdWithUsers(@Param("id") Long id);
+
+	boolean existsByName(String name);
 }

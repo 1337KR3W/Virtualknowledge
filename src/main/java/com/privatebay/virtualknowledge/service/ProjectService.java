@@ -3,6 +3,7 @@ package com.privatebay.virtualknowledge.service;
 import com.privatebay.virtualknowledge.dto.ProjectRequestDTO;
 import com.privatebay.virtualknowledge.dto.ProjectResponseDTO;
 import com.privatebay.virtualknowledge.entity.*;
+import com.privatebay.virtualknowledge.exception.ConflictException;
 import com.privatebay.virtualknowledge.mapper.ProjectMapper;
 import com.privatebay.virtualknowledge.repository.*;
 import org.springframework.stereotype.Service;
@@ -52,6 +53,10 @@ public class ProjectService {
 	
 	@Transactional
 	public ProjectResponseDTO createProject(ProjectRequestDTO dto) {
+		
+		if (projectRepository.existsByName(dto.getName())) {
+	        throw new ConflictException("A project with the name '" + dto.getName() + "' already exists.");
+	    }
 		
 		validateDates(dto.getStartDate(), dto.getEndDate());
 		
