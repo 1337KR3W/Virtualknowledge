@@ -3,6 +3,9 @@ package com.privatebay.virtualknowledge.controller;
 import com.privatebay.virtualknowledge.dto.UserRequestDTO;
 import com.privatebay.virtualknowledge.dto.UserResponseDTO;
 import com.privatebay.virtualknowledge.service.UserService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -29,10 +32,10 @@ public class UserController {
 
     @PostMapping("/admin/register")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<Map<String, String>> registerByAdmin(@RequestBody UserRequestDTO request) {
+    public ResponseEntity<Map<String, String>> registerByAdmin(@Valid @RequestBody UserRequestDTO request) {
         userService.registerUser(request);
         Map<String, String> response = new HashMap<>();
-        response.put("message", "Usuario creado exitosamente");
+        response.put("message", "New user created successfully!");
         return ResponseEntity.ok(response);
     }
 
