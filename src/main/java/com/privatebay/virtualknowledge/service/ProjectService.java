@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.WeekFields;
 import java.util.HashSet;
 import java.util.List;
@@ -43,8 +44,17 @@ public class ProjectService {
 		return projectMapper.toResponseDTO(project);
 	}
 
+	private void validateDates(LocalDateTime start, LocalDateTime end) {
+        if (end != null && end.isBefore(start)) {
+            throw new IllegalArgumentException("The end date must be later than the start date.");
+        }
+    }
+	
 	@Transactional
 	public ProjectResponseDTO createProject(ProjectRequestDTO dto) {
+		
+		validateDates(dto.getStartDate(), dto.getEndDate());
+		
 		Department dept = departmentRepository.findById(dto.getDepartmentId())
 				.orElseThrow(() -> new IllegalArgumentException("Department not found"));
 
@@ -64,6 +74,9 @@ public class ProjectService {
 
 	@Transactional
 	public ProjectResponseDTO updateProject(Long id, ProjectRequestDTO dto) {
+		
+		validateDates(dto.getStartDate(), dto.getEndDate());
+		
 		Project project = projectRepository.findByIdWithUsers(id)
 				.orElseThrow(() -> new RuntimeException("Project not found"));
 		
