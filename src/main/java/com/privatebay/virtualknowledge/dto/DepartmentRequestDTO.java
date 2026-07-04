@@ -15,8 +15,15 @@ public class DepartmentRequestDTO {
 
     public DepartmentRequestDTO() {
     }
+    
+    
+    public DepartmentRequestDTO(@NotBlank @Size(min = 3, max = 100) String name) {
+		super();
+		this.name = name;
+	}
 
-    public String getName() {
+
+	public String getName() {
         return name;
     }
 
