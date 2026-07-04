@@ -1,5 +1,6 @@
 package com.privatebay.virtualknowledge.dto;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -7,19 +8,20 @@ import jakarta.validation.constraints.Size;
 public class UserRequestDTO {
 
 	@NotBlank
-	@Size(min = 3, max = 64)
+	@Size(min = 3, max = 64, message = "First name must be between 3 and 64 characters")
 	private String firstName;
 
 	@NotBlank
-	@Size(min = 3, max = 64)
+	@Size(min = 3, max = 64, message = "Last name must be between 3 and 64 characters")
 	private String lastName;
 
-	@NotBlank
+	@Email(message = "Email should be valid")
+	@NotBlank(message = "First name is mandatory")
 	@Size(max = 150)
 	private String email;
 
 	@NotBlank
-	@Size(min = 3, max = 255)
+	@Size(min = 3, max = 16)
 	private String password;
 
 	@NotNull
