@@ -4,13 +4,21 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class ProjectResponseDTO {
+
 	private Long id;
+
 	private String name;
+
 	private String description;
+
 	private LocalDateTime startDate;
+
 	private LocalDateTime endDate;
+
 	private String departmentName;
+
 	private Long departmentId;
+
 	private List<Long> userIds;
 
 	public ProjectResponseDTO() {

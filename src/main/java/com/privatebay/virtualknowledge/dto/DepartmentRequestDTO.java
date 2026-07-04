@@ -2,8 +2,15 @@ package com.privatebay.virtualknowledge.dto;
 
 import java.util.List;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
 public class DepartmentRequestDTO {
+	
+	@NotBlank
+	@Size(min = 3, max = 100)
     private String name;
+    
     private List<Long> userIds;
 
     public DepartmentRequestDTO() {

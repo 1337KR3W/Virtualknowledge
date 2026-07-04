@@ -1,15 +1,10 @@
 package com.privatebay.virtualknowledge.entity;
 
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
-
-import org.springframework.data.annotation.CreatedDate;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.privatebay.virtualknowledge.enums.UserStatus;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -18,7 +13,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinTable;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
@@ -45,7 +39,7 @@ public class User {
 	private String password;
 
 	@Column(name = "registration_date", nullable = false, updatable = false)
-	private ZonedDateTime registrationDate = ZonedDateTime.now();
+	private LocalDateTime registrationDate = LocalDateTime.now();
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false, length = 20)
@@ -68,11 +62,11 @@ public class User {
 		super();
 	}
 
-	public User(ZonedDateTime registrationDate) {
+	public User(LocalDateTime registrationDate) {
         this.registrationDate = registrationDate;
     }
 
-	public User(String firstName,String lastName, String email, String password, Role role,ZonedDateTime registrationDate,
+	public User(String firstName,String lastName, String email, String password, Role role,LocalDateTime registrationDate,
 			UserStatus status) {
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -119,11 +113,11 @@ public class User {
 		return id;
 	}
 
-	public ZonedDateTime getRegistrationDate() {
+	public LocalDateTime getRegistrationDate() {
 		return registrationDate;
 	}
 
-	public void setRegistrationDate(ZonedDateTime registrationDate) {
+	public void setRegistrationDate(LocalDateTime registrationDate) {
 		this.registrationDate = registrationDate;
 	}
 

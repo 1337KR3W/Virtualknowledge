@@ -1,70 +1,92 @@
 package com.privatebay.virtualknowledge.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
 public class UserRequestDTO {
-    private String firstName;
-    private String lastName;
-    private String email;
-    private String password;
-    private Long roleId;
-    private Long departmentId;
-    private String status;
 
-    public UserRequestDTO() {
-    }
+	@NotBlank
+	@Size(min = 3, max = 64)
+	private String firstName;
 
-    public String getFirstName() {
-        return firstName;
-    }
+	@NotBlank
+	@Size(min = 3, max = 64)
+	private String lastName;
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
+	@NotBlank
+	@Size(max = 150)
+	private String email;
 
-    public String getLastName() {
-        return lastName;
-    }
+	@NotBlank
+	@Size(min = 3, max = 255)
+	private String password;
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
+	@NotNull
+	private Long roleId;
 
-    public String getEmail() {
-        return email;
-    }
+	@NotNull
+	private Long departmentId;
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+	@NotNull
+	private String status;
 
-    public String getPassword() {
-        return password;
-    }
+	public UserRequestDTO() {
+	}
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+	public String getFirstName() {
+		return firstName;
+	}
 
-    public Long getRoleId() {
-        return roleId;
-    }
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
 
-    public void setRoleId(Long roleId) {
-        this.roleId = roleId;
-    }
+	public String getLastName() {
+		return lastName;
+	}
 
-    public Long getDepartmentId() {
-        return departmentId;
-    }
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
 
-    public void setDepartmentId(Long departmentId) {
-        this.departmentId = departmentId;
-    }
+	public String getEmail() {
+		return email;
+	}
 
-    public String getStatus() {
-        return status;
-    }
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public Long getRoleId() {
+		return roleId;
+	}
+
+	public void setRoleId(Long roleId) {
+		this.roleId = roleId;
+	}
+
+	public Long getDepartmentId() {
+		return departmentId;
+	}
+
+	public void setDepartmentId(Long departmentId) {
+		this.departmentId = departmentId;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
 }

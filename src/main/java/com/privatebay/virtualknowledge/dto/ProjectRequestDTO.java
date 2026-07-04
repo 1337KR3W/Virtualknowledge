@@ -7,12 +7,27 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
 public class ProjectRequestDTO {
+	
+	@NotBlank
+	@Size(min = 3, max = 150)
 	private String name;
+	
+	@Size(max = 500)
 	private String description;
+	
+	@NotNull
 	private LocalDateTime startDate;
+	
 	private LocalDateTime endDate;
+	
+	@NotNull
 	private Long departmentId;
+	
 	private Set<Long> userIds = new HashSet<>();
 
 	public ProjectRequestDTO() {
