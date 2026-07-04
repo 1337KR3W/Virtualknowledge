@@ -3,6 +3,8 @@ package com.privatebay.virtualknowledge.service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import java.util.List;
+import java.util.Optional;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -57,4 +59,55 @@ public class DepartmentServiceTest {
 	    
 	    verifyNoInteractions(userRepository);
 	}
+	
+	@Test
+    void getAllDepartments_ShouldReturnList_WhenDepartmentsExist() {
+        Department dept = new Department();
+        when(departmentRepository.findAll()).thenReturn(List.of(dept));
+        when(departmentMapper.toResponseDTO(any())).thenReturn(new DepartmentResponseDTO());
+
+        List<DepartmentResponseDTO> result = departmentService.getAllDepartments();
+
+        assertEquals(1, result.size());
+        verify(departmentRepository).findAll();
+    }
+
+    @Test
+    void getDepartment_ShouldThrowException_WhenIdNotFound() {
+        when(departmentRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> departmentService.getDepartment(1L));
+    }
+
+    @Test
+    void updateDepartment_ShouldUpdate_WhenExists() {
+        Department existingDept = new Department();
+        when(departmentRepository.findById(1L)).thenReturn(Optional.of(existingDept));
+        when(departmentRepository.save(any(Department.class))).thenAnswer(i -> i.getArgument(0));
+        when(departmentMapper.toResponseDTO(any())).thenReturn(new DepartmentResponseDTO());
+
+        DepartmentRequestDTO dto = new DepartmentRequestDTO("New Name");
+        DepartmentResponseDTO result = departmentService.updateDepartment(1L, dto);
+
+        assertNotNull(result);
+        assertEquals("New Name", existingDept.getName());
+        verify(departmentRepository).save(existingDept);
+    }
+
+    @Test
+    void deleteDepartment_ShouldDelete_WhenExists() {
+        when(departmentRepository.existsById(1L)).thenReturn(true);
+        
+        departmentService.deleteDepartment(1L);
+        
+        verify(departmentRepository).deleteById(1L);
+    }
+
+    @Test
+    void deleteDepartment_ShouldThrowException_WhenNotExists() {
+        when(departmentRepository.existsById(1L)).thenReturn(false);
+        
+        assertThrows(RuntimeException.class, () -> departmentService.deleteDepartment(1L));
+    }
+	
 }
