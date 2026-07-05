@@ -8,9 +8,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -24,15 +23,15 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	@Override
 	@Transactional(readOnly = true)
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-
 		User user = userRepository.findByEmail(email)
-				.orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con email: " + email));
+				.orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
 
-		List<SimpleGrantedAuthority> authorities = user.getRoles().stream()
-				.map(role -> new SimpleGrantedAuthority(role.getName().name())).collect(Collectors.toList());
+		String roleName = (user.getRole() != null) ? user.getRole().getName().name() : "USER";
+
+		List<SimpleGrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(roleName));
 
 		return org.springframework.security.core.userdetails.User.builder().username(user.getEmail())
-				.password(user.getPassword()).authorities(authorities).disabled(!"ACTIVE".equals(user.getStatus()))
-				.build();
+				.password(user.getPassword()).authorities(authorities)
+				.disabled(!"ACTIVE".equals(user.getStatus().name())).build();
 	}
 }

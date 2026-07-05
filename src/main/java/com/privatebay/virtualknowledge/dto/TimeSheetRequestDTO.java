@@ -1,12 +1,24 @@
 package com.privatebay.virtualknowledge.dto;
 
+import java.time.LocalDate;
 import java.util.List;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
 public class TimeSheetRequestDTO {
+	
+	@Size(max = 10)
 	private String weekId;
-	private String[] weekDates;
+	
+	private List<LocalDate> weekDates;
+	
+	@Size(max = 500)
 	private String globalComment;
+	
 	private List<ProjectTimeRowDTO> rows;
+	
+	@NotNull
 	private Long userId;
 
 	public TimeSheetRequestDTO() {
@@ -53,11 +65,11 @@ public class TimeSheetRequestDTO {
 		this.userId = userId;
 	}
 
-	public String[] getWeekDates() {
+	public List<LocalDate> getWeekDates() {
 		return weekDates;
 	}
 
-	public void setWeekDates(String[] weekDates) {
+	public void setWeekDates(List<LocalDate> weekDates) {
 		this.weekDates = weekDates;
 	}
 

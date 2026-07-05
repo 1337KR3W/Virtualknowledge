@@ -18,7 +18,6 @@ public class DataLoader {
 					roleRepository.save(new Role(type));
 				}
 			}
-			System.out.println("Roles inicializados correctamente.");
 		};
 	}
 }

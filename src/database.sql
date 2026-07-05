@@ -17,22 +17,22 @@ CREATE TABLE IF NOT EXISTS users (
   last_name VARCHAR(64) NOT NULL,
   email VARCHAR(150) NOT NULL UNIQUE,
   password VARCHAR(255) NOT NULL,
-  registration_date DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  registration_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
   status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
   department_id BIGINT NOT NULL,
   role_id BIGINT NOT NULL,
-  CONSTRAINT fk_user_dept FOREIGN KEY (department_id) REFERENCES departments(id) ON DELETE CASCADE,
+  CONSTRAINT fk_user_dept FOREIGN KEY (department_id) REFERENCES departments(id),
   CONSTRAINT fk_user_role FOREIGN KEY (role_id) REFERENCES roles(id)
 );
 
 CREATE TABLE IF NOT EXISTS projects (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(150) NOT NULL UNIQUE,
+  name VARCHAR(150) NOT NULL,
   description TEXT,
-  start_date DATETIME NOT NULL,
-  end_date DATETIME,
+  start_date TIMESTAMP NOT NULL,
+  end_date TIMESTAMP,
   department_id BIGINT NOT NULL,
-  CONSTRAINT fk_project_dept FOREIGN KEY (department_id) REFERENCES departments(id) ON DELETE CASCADE
+  CONSTRAINT fk_project_dept FOREIGN KEY (department_id) REFERENCES departments(id)
 );
 
 CREATE TABLE IF NOT EXISTS project_users (
@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS project_users (
   user_id BIGINT NOT NULL,
   PRIMARY KEY (project_id, user_id),
   CONSTRAINT fk_pu_project FOREIGN KEY (project_id) REFERENCES projects(id),
-  CONSTRAINT fk_pu_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  CONSTRAINT fk_pu_user FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 CREATE TABLE IF NOT EXISTS timesheets (
@@ -52,8 +52,8 @@ CREATE TABLE IF NOT EXISTS timesheets (
   comment TEXT,
   global_comment TEXT,
   week_id VARCHAR(10),
-  CONSTRAINT fk_ts_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-  CONSTRAINT fk_ts_project FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
+  CONSTRAINT fk_ts_user FOREIGN KEY (user_id) REFERENCES users(id),
+  CONSTRAINT fk_ts_project FOREIGN KEY (project_id) REFERENCES projects(id)
 );
 
 CREATE INDEX idx_ts_user_date ON timesheets(user_id, work_date);

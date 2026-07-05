@@ -28,6 +28,7 @@
 	</scm>
 	<properties>
 		<java.version>17</java.version>
+		<mapstruct.version>1.5.5.Final</mapstruct.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -62,6 +63,11 @@
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+        <groupId>org.mapstruct</groupId>
+        	<artifactId>mapstruct</artifactId>
+        	<version>${mapstruct.version}</version>
+    	</dependency>
 		<!-- JWT -->
 		<dependency>
 		    <groupId>io.jsonwebtoken</groupId>
@@ -81,37 +87,37 @@
 		    <scope>runtime</scope>
 		</dependency>
 
-	    <!-- Para tests unitarios con JUnit 5 -->
+		<!-- Para tests unitarios con JUnit 5 -->
 	    <dependency>
 	        <groupId>org.junit.jupiter</groupId>
 	        <artifactId>junit-jupiter</artifactId>
 	        <version>5.10.0</version>
 	        <scope>test</scope>
 	    </dependency>
-	
-	    <!-- Mockito para mocks -->
+
+		<!-- Mockito para mocks -->
 	    <dependency>
 	        <groupId>org.mockito</groupId>
 	        <artifactId>mockito-core</artifactId>
 	        <version>5.5.0</version>
 	        <scope>test</scope>
 	    </dependency>
-	
-	    <!-- Integración Mockito con JUnit 5 -->
+
+		<!-- Integración Mockito con JUnit 5 -->
 	    <dependency>
 	        <groupId>org.mockito</groupId>
 	        <artifactId>mockito-junit-jupiter</artifactId>
 	        <version>5.5.0</version>
 	        <scope>test</scope>
 	    </dependency>
-		
-		 <!--ENV-->
+
+		<!--ENV-->
 		<dependency>
 		    <groupId>io.github.cdimascio</groupId>
 		    <artifactId>dotenv-java</artifactId>
 		    <version>3.0.0</version>
 		</dependency>
-		
+
 		<!--OpenPDF for PDF generation-->
 		<dependency>
     		<groupId>com.github.librepdf</groupId>
@@ -136,6 +142,21 @@
 	                <encoding>UTF-8</encoding>
 	            </configuration>
 	        </plugin>
+	        
+	        <plugin>
+	            <groupId>org.apache.maven.plugins</groupId>
+	            <artifactId>maven-compiler-plugin</artifactId>
+	            <configuration>
+	                <annotationProcessorPaths>
+	                    <path>
+	                        <groupId>org.mapstruct</groupId>
+	                        <artifactId>mapstruct-processor</artifactId>
+	                        <version>${mapstruct.version}</version>
+	                    </path>
+	                </annotationProcessorPaths>
+	            </configuration>
+	        </plugin>
+ 
 	    </plugins>
 	</build>
 

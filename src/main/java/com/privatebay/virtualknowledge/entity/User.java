@@ -1,20 +1,23 @@
 package com.privatebay.virtualknowledge.entity;
 
+
 import java.time.LocalDateTime;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
+import com.privatebay.virtualknowledge.enums.UserStatus;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinTable;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -26,56 +29,74 @@ public class User {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(nullable = false, length = 32)
-	private String name;
+	@Column(nullable = false, length = 64)
+	private String firstName;
+
+	@Column(nullable = false, length = 64)
+	private String lastName;
 
 	@Column(nullable = false, length = 150, unique = true)
 	private String email;
 
-	@Column(nullable = false, length = 64)
+	@Column(nullable = false, length = 255)
 	private String password;
 
 	@Column(name = "registration_date", nullable = false, updatable = false)
-	private LocalDateTime registrationDate;
+	private LocalDateTime registrationDate = LocalDateTime.now();
 
+	@Enumerated(EnumType.STRING)
 	@Column(nullable = false, length = 20)
-	private String status = "ACTIVE";
+	private UserStatus status = UserStatus.ACTIVE;
 
-	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
-	private Set<Role> roles = new HashSet<>();
+	@ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id", nullable = false)
+    private Role role;
 
+	@ManyToMany(mappedBy = "users")
+	private Set<Project> projects = new HashSet<>();
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "department_id", nullable = false)
+	private Department department;
+	
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Project> projects;
-
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "user_departments", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "department_id"))
-	private Set<Department> departments = new HashSet<>();
-
+	private Set<TimeSheet> timesheets = new HashSet<>();
+	
+	
+	
 	public User() {
+		super();
 	}
 
 	public User(LocalDateTime registrationDate) {
-		super();
-		this.registrationDate = LocalDateTime.now();
-	}
+        this.registrationDate = registrationDate;
+    }
 
-	public User(String name, String email, String password, LocalDateTime registrationDate, Set<Role> roles,
-			String status) {
-		this.name = name;
+	public User(String firstName,String lastName, String email, String password, Role role,LocalDateTime registrationDate,
+			UserStatus status) {
+		this.firstName = firstName;
+		this.lastName = lastName;
 		this.email = email;
 		this.password = password;
+		this.role = role;
 		this.registrationDate = registrationDate;
-		this.roles = roles;
 		this.status = status;
 	}
 
-	public String getName() {
-		return name;
+	public String getFirstName() {
+		return firstName;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 
 	public String getEmail() {
@@ -106,32 +127,38 @@ public class User {
 		this.registrationDate = registrationDate;
 	}
 
-	public Set<Role> getRoles() {
-		return roles;
+	public Role getRole() {
+		return role;
 	}
 
-	public void setRoles(Set<Role> roles) {
-		this.roles = roles;
+	public void setRole(Role role) {
+		this.role = role;
 	}
 
-	public void addRole(Role role) {
-		this.roles.add(role);
-	}
-
-	public String getStatus() {
+	public UserStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(UserStatus status) {
 		this.status = status;
 	}
 
-	public Set<Department> getDepartments() {
-		return departments;
+	public Department getDepartment() {
+		return department;
 	}
 
-	public void setDepartments(Set<Department> departments) {
-		this.departments = departments;
+	public void setDepartment(Department department) {
+		this.department = department;
 	}
+
+	public Set<Project> getProjects() {
+		return projects;
+	}
+
+	public void setProjects(Set<Project> projects) {
+		this.projects = projects;
+	}
+	
+		
 
 }

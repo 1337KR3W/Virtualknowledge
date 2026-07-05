@@ -1,31 +1,86 @@
 package com.privatebay.virtualknowledge.service;
 
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-
+import com.privatebay.virtualknowledge.dto.DepartmentRequestDTO;
+import com.privatebay.virtualknowledge.dto.DepartmentResponseDTO;
 import com.privatebay.virtualknowledge.entity.Department;
+import com.privatebay.virtualknowledge.entity.User;
+import com.privatebay.virtualknowledge.mapper.DepartmentMapper;
 import com.privatebay.virtualknowledge.repository.DepartmentRepository;
+import com.privatebay.virtualknowledge.repository.UserRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class DepartmentService {
 
 	private final DepartmentRepository departmentRepository;
+	private final UserRepository userRepository;
+	private final DepartmentMapper departmentMapper;
 
-	public DepartmentService(DepartmentRepository departmentRepository) {
-		super();
+	public DepartmentService(DepartmentRepository departmentRepository, UserRepository userRepository,
+			DepartmentMapper departmentMapper) {
 		this.departmentRepository = departmentRepository;
+		this.userRepository = userRepository;
+		this.departmentMapper = departmentMapper;
 	}
 
-	public List<Department> getAllDepartments() {
-		return departmentRepository.findAll();
+	@Transactional(readOnly = true)
+	public List<DepartmentResponseDTO> getAllDepartments() {
+		return departmentRepository.findAll().stream().map(departmentMapper::toResponseDTO)
+				.collect(Collectors.toList());
 	}
 
-	public Department createDepartment(Department department) {
-		if (departmentRepository.findByName(department.getName()).isPresent()) {
-			throw new IllegalArgumentException("El departamento ya existe.");
+	@Transactional(readOnly = true)
+	public DepartmentResponseDTO getDepartment(Long id) {
+		return departmentRepository.findById(id).map(departmentMapper::toResponseDTO)
+				.orElseThrow(() -> new RuntimeException("Department not found with ID: " + id));
+	}
+
+	@Transactional
+	public DepartmentResponseDTO createDepartment(DepartmentRequestDTO dto) {
+		List<Department> existing = departmentRepository.findByName(dto.getName());
+		if (!existing.isEmpty()) {
+			throw new IllegalArgumentException("Department already exists.");
 		}
-		return departmentRepository.save(department);
+		
+		if (dto.getName() == null || dto.getName().isEmpty()) {
+	        throw new IllegalArgumentException("Department name is required");
+	    }
+
+		Department department = new Department();
+		department.setName(dto.getName());
+		assignUsersToDepartment(department, dto.getUserIds());
+
+		return departmentMapper.toResponseDTO(departmentRepository.save(department));
 	}
 
+	@Transactional
+	public DepartmentResponseDTO updateDepartment(Long id, DepartmentRequestDTO dto) {
+		Department dept = departmentRepository.findById(id)
+				.orElseThrow(() -> new RuntimeException("Department not found with ID: " + id));
+
+		dept.setName(dto.getName());
+		assignUsersToDepartment(dept, dto.getUserIds());
+
+		return departmentMapper.toResponseDTO(departmentRepository.save(dept));
+	}
+
+	private void assignUsersToDepartment(Department department, List<Long> userIds) {
+		if (userIds != null) {
+			List<User> users = userRepository.findAllById(userIds);
+			department.setUsers(users);
+		} else {
+			department.setUsers(List.of());
+		}
+	}
+
+	public void deleteDepartment(Long id) {
+		if (!departmentRepository.existsById(id)) {
+			throw new RuntimeException("Department not found with ID: " + id);
+		}
+		departmentRepository.deleteById(id);
+	}
 }

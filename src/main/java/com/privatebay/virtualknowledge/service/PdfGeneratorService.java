@@ -5,12 +5,14 @@ import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Map;
+import java.time.temporal.WeekFields;
+import java.util.*;
+import java.util.List;
 import org.springframework.stereotype.Service;
-
 import com.lowagie.text.*;
 import com.lowagie.text.pdf.*;
 import com.privatebay.virtualknowledge.dto.ProjectTimeRowDTO;
+import com.privatebay.virtualknowledge.dto.TimeEntryDTO;
 import com.privatebay.virtualknowledge.dto.TimeSheetRequestDTO;
 
 @Service
@@ -18,7 +20,7 @@ public class PdfGeneratorService {
 
 	private static final String[] DAYS = { "sun", "mon", "tue", "wed", "thu", "fri", "sat" };
 	private static final String[] HEADERS = { "Project", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Total" };
-
+	
 	private static final Map<String, String> DAY_LABELS = Map.of("sun", "Sunday", "mon", "Monday", "tue", "Tuesday",
 			"wed", "Wednesday", "thu", "Thursday", "fri", "Friday", "sat", "Saturday");
 
@@ -55,7 +57,7 @@ public class PdfGeneratorService {
 		for (ProjectTimeRowDTO row : data.getRows()) {
 			double rowTotal = 0;
 			for (String day : DAYS) {
-				var entry = row.getDays().get(day);
+				TimeEntryDTO entry = row.getDays().get(day);
 				if (entry != null && entry.getHours() != null) {
 					rowTotal += entry.getHours().doubleValue();
 				}
@@ -154,7 +156,7 @@ public class PdfGeneratorService {
 			BigDecimal rowTotal = BigDecimal.ZERO;
 
 			for (String day : DAYS) {
-				var entry = row.getDays().get(day);
+				TimeEntryDTO entry = row.getDays().get(day);
 				BigDecimal hr = (entry != null && entry.getHours() != null) ? entry.getHours() : BigDecimal.ZERO;
 				rowTotal = rowTotal.add(hr);
 
@@ -176,17 +178,17 @@ public class PdfGeneratorService {
 		document.add(mainTable);
 
 		boolean hasDailyComments = false;
-		java.util.List<Paragraph> dailyCommentsList = new java.util.ArrayList<>();
+		List<Paragraph> dailyCommentsList = new ArrayList<>();
 
 		for (ProjectTimeRowDTO row : data.getRows()) {
 			if (row.getDays() == null)
 				continue;
 
 			for (String day : DAYS) {
-				var entry = row.getDays().get(day);
+				TimeEntryDTO entry = row.getDays().get(day);
 				if (entry != null && entry.getComment() != null && !entry.getComment().trim().isEmpty()) {
 					hasDailyComments = true;
-					String dateForDay = calculatedDates[java.util.Arrays.asList(DAYS).indexOf(day)];
+					String dateForDay = calculatedDates[Arrays.asList(DAYS).indexOf(day)];
 
 					String textFormat = String.format("•  %s - %s (%s): %s", row.getProjectName(),
 							DAY_LABELS.getOrDefault(day, day).substring(0, 3), dateForDay, entry.getComment().trim());
@@ -245,7 +247,7 @@ public class PdfGeneratorService {
 			int week = Integer.parseInt(parts[1]);
 
 			// ISO-8601
-			java.time.temporal.WeekFields weekFields = java.time.temporal.WeekFields.of(java.util.Locale.getDefault());
+			WeekFields weekFields = WeekFields.of(Locale.getDefault());
 			LocalDate date = LocalDate.of(year, 2, 1).with(weekFields.weekOfYear(), week).with(weekFields.dayOfWeek(),
 					1);
 
@@ -257,7 +259,7 @@ public class PdfGeneratorService {
 				current = current.plusDays(1);
 			}
 		} catch (Exception e) {
-			java.util.Arrays.fill(dates, "----/--/--");
+			Arrays.fill(dates, "----/--/--");
 		}
 		return dates;
 	}
