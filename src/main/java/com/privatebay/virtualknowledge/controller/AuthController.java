@@ -84,7 +84,26 @@ public class AuthController {
 		User user = userRepository.findByEmail(userDetails.getUsername()).orElseThrow();
 
 		String token = jwtService.generateToken(user.getEmail(), user.getId(), authentication.getAuthorities());
+	    String refreshToken = jwtService.generateRefreshToken(user.getEmail(), user.getId());
+		
 		return new AuthResponseDTO(token, user.getId(), user.getEmail(), user.getFirstName(),
-				user.getRole().getName().name(), user.getDepartment().getName());
+				user.getRole().getName().name(), user.getDepartment().getName(), refreshToken);
+	}
+	
+	@PostMapping("/refresh")
+	public AuthResponseDTO refresh(@RequestHeader("Authorization") String refreshTokenHeader) {
+	    if (refreshTokenHeader == null || !refreshTokenHeader.startsWith("Bearer ")) {
+	        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid refresh token");
+	    }
+	    String refreshToken = refreshTokenHeader.substring(7);
+	    String email = jwtService.extractEmail(refreshToken);
+	    User user = userRepository.findByEmail(email).orElseThrow();
+	    
+	    String newAccessToken = jwtService.generateToken(user.getEmail(), user.getId(), 
+	            Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole().getName().name())));
+	           
+	    return new AuthResponseDTO(newAccessToken, user.getId(), user.getEmail(), 
+	                               user.getFirstName(), user.getRole().getName().name(), 
+	                               user.getDepartment().getName(), refreshToken);
 	}
 }

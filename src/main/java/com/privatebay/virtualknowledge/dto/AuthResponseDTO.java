@@ -7,10 +7,11 @@ public class AuthResponseDTO {
 	private String name;
 	private String role;
 	private String departmentName;
+	private String refreshToken;
 
 	public AuthResponseDTO() {
 	}
-
+	
 	public AuthResponseDTO(String token, Long id, String email, String name, String role, String departmentName) {
 		this.token = token;
 		this.id = id;
@@ -18,6 +19,17 @@ public class AuthResponseDTO {
 		this.name = name;
 		this.role = role;
 		this.departmentName = departmentName;
+		
+	}
+
+	public AuthResponseDTO(String token, Long id, String email, String name, String role, String departmentName, String refreshToken) {
+		this.token = token;
+		this.id = id;
+		this.email = email;
+		this.name = name;
+		this.role = role;
+		this.departmentName = departmentName;
+		this.refreshToken = refreshToken;
 	}
 
 	public String getToken() {
@@ -67,4 +79,15 @@ public class AuthResponseDTO {
 	public void setDepartmentName(String departmentName) {
 		this.departmentName = departmentName;
 	}
+
+
+	public String getRefreshToken() {
+		return refreshToken;
+	}
+
+	public void setRefreshToken(String refreshToken) {
+		this.refreshToken = refreshToken;
+	}
+	
+	
 }
