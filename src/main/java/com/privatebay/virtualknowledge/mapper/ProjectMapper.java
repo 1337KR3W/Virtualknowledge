@@ -1,40 +1,29 @@
 package com.privatebay.virtualknowledge.mapper;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import com.privatebay.virtualknowledge.dto.ProjectResponseDTO;
 import com.privatebay.virtualknowledge.entity.Project;
+import com.privatebay.virtualknowledge.entity.User;
 
-import java.util.ArrayList;
-import java.util.stream.Collectors;
+@Mapper(componentModel = "spring")
+public interface ProjectMapper {
 
-import org.springframework.stereotype.Component;
+	@Mapping(target = "departmentName", source = "project.department.name")
+	@Mapping(target = "departmentId", source = "project.department.id")
+	@Mapping(target = "userIds", source = "users")
+	ProjectResponseDTO toResponseDTO(Project project);
 
-@Component
-public class ProjectMapper {
-
-	public ProjectResponseDTO toResponseDTO(Project project) {
-		if (project == null)
-			return null;
-
-		ProjectResponseDTO dto = new ProjectResponseDTO();
-		dto.setId(project.getId());
-		dto.setName(project.getName());
-		dto.setDescription(project.getDescription());
-		dto.setStartDate(project.getStartDate());
-		dto.setEndDate(project.getEndDate());
-
-		if (project.getDepartment() != null) {
-			dto.setDepartmentName(project.getDepartment().getName());
-			dto.setDepartmentId(project.getDepartment().getId());
+	default List<Long> mapUsersToIds(Set<User> users) {
+		if (users == null) {
+			return new ArrayList<>();
 		}
-		
-		if (project.getUsers() != null) {
-            dto.setUserIds(project.getUsers().stream()
-                .map(user -> user.getId())
-                .collect(Collectors.toList()));
-        } else {
-            dto.setUserIds(new ArrayList<>());
-        }
 
-		return dto;
+		return users.stream().map(User::getId).collect(Collectors.toList());
 	}
+
 }
