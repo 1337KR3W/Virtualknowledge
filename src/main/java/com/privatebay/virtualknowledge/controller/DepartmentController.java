@@ -2,6 +2,8 @@ package com.privatebay.virtualknowledge.controller;
 
 import com.privatebay.virtualknowledge.dto.DepartmentRequestDTO;
 import com.privatebay.virtualknowledge.dto.DepartmentResponseDTO;
+import com.privatebay.virtualknowledge.entity.User;
+import com.privatebay.virtualknowledge.repository.UserRepository;
 import com.privatebay.virtualknowledge.service.DepartmentService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -21,9 +24,11 @@ import java.util.List;
 public class DepartmentController {
 
     private final DepartmentService departmentService;
+    private final UserRepository userRepository;
 
-    public DepartmentController(DepartmentService departmentService) {
+    public DepartmentController(DepartmentService departmentService, UserRepository userRepository) {
         this.departmentService = departmentService;
+        this.userRepository = userRepository;
     }
 
 	@Operation(summary = "List all departments", description = "Only admins can list all departments")
@@ -32,6 +37,14 @@ public class DepartmentController {
     public ResponseEntity<List<DepartmentResponseDTO>> getAll() {
         return ResponseEntity.ok(departmentService.getAllDepartments());
     }
+	
+	@GetMapping("/my-department")
+	public ResponseEntity<DepartmentResponseDTO> getMyDepartment(Principal principal) {
+	    String username = principal.getName();
+	    User user = userRepository.findByEmail(username)
+	            .orElseThrow(() -> new RuntimeException("User not found"));
+	    return ResponseEntity.ok(departmentService.getDepartmentByUserId(user.getId()));
+	}
 
 	@Operation(summary = "Create new department", description = "Only admins can create new departments")
     @PostMapping
