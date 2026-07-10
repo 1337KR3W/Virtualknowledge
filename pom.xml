@@ -37,6 +37,7 @@
 		<mockito.version>5.5.0</mockito.version>
 		<env.version>3.0.0</env.version>
 		<openpdf.version>2.0.3</openpdf.version>
+		<swagger.version>2.2.52</swagger.version>
 
 
 	</properties>
@@ -136,6 +137,13 @@
 			<groupId>com.github.librepdf</groupId>
 			<artifactId>openpdf</artifactId>
 			<version>${openpdf.version}</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>io.swagger.core.v3</groupId>
+		    <artifactId>swagger-annotations</artifactId>
+		    <version>${swagger.version}</version>
+		    <scope>compile</scope>
 		</dependency>
 
 	</dependencies>
