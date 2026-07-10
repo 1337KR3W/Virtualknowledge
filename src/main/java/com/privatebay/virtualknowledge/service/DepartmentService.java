@@ -106,4 +106,9 @@ public class DepartmentService {
 
 		departmentRepository.delete(dept);
 	}
+
+	public DepartmentResponseDTO getDepartmentByUserId(Long id) {
+		return departmentRepository.findByUserId(id).map(departmentMapper::toResponseDTO)
+				.orElseThrow(() -> new RuntimeException("Department not found with ID: " + id));
+	}
 }
