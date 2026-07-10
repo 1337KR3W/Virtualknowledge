@@ -37,7 +37,7 @@
 		<mockito.version>5.5.0</mockito.version>
 		<env.version>3.0.0</env.version>
 		<openpdf.version>2.0.3</openpdf.version>
-		<swagger.version>2.2.52</swagger.version>
+		<swagger.version>2.8.5</swagger.version>
 
 
 	</properties>
@@ -140,10 +140,9 @@
 		</dependency>
 		
 		<dependency>
-		    <groupId>io.swagger.core.v3</groupId>
-		    <artifactId>swagger-annotations</artifactId>
+		    <groupId>org.springdoc</groupId>
+		    <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 		    <version>${swagger.version}</version>
-		    <scope>compile</scope>
 		</dependency>
 
 	</dependencies>
