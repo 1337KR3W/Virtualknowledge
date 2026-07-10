@@ -29,8 +29,8 @@ public class UserController {
 
     @Operation(summary = "Obtain user profile", description = "Returns user details providing an ID")
     @ApiResponses(value = {
-    		@ApiResponse(responseCode = "200", description = "User not found"),
-    		@ApiResponse(responseCode = "404", description = "User not found")
+    		@ApiResponse(responseCode = "200", description = " EXAMPLE User not found"),
+    		@ApiResponse(responseCode = "404", description = "EXAMPLE User not found")
     		
     })
     @GetMapping("/{userId}")
@@ -49,7 +49,7 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary =  "List users by department", description = "Only admins can list users by department")
+    @Operation(summary =  "List users by department ID", description = "Only admins can list users by department")
     @GetMapping("/admin/department/{departmentId}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<List<UserResponseDTO>> getUsersByDepartment(@PathVariable Long departmentId) {
@@ -63,7 +63,7 @@ public class UserController {
         return ResponseEntity.ok(userService.findAll());
     }
     
-    @Operation(summary = "Update user", description = "Only admins can update users")
+    @Operation(summary = "Update user by user ID", description = "Only admins can update users")
 	@PutMapping("/admin/edit/{id}")
 	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	public ResponseEntity<UserResponseDTO> updateUser(@PathVariable Long id,
@@ -71,7 +71,7 @@ public class UserController {
 		return ResponseEntity.ok(userService.updateUser(id, request));
 	}
     
-    @Operation(summary = "Delete user", description = "Only admins can delete users")
+    @Operation(summary = "Delete user by user ID", description = "Only admins can delete users")
 	@DeleteMapping("/admin/delete/{id}")
 	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	public ResponseEntity<Void> deleteUser(@PathVariable Long id) {

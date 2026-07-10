@@ -12,19 +12,33 @@ import org.springframework.web.bind.annotation.*;
 import com.privatebay.virtualknowledge.dto.TimeSheetRequestDTO;
 
 import com.privatebay.virtualknowledge.service.TimeSheetService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import com.privatebay.virtualknowledge.service.SecurityService;
 
 @RestController
 @RequestMapping("/timesheet")
 @CrossOrigin(origins = "http://localhost:4200")
+@Tag(name = "TimeSheets", description = "Endpoints for timesheets management")
 public class TimeSheetController {
 
-	@Autowired
-	private TimeSheetService timeSheetService;
+	
+	private final TimeSheetService timeSheetService;
 
-	@Autowired
-	private SecurityService securityService;
+	
+	private final SecurityService securityService;
+	
+	
 
+	public TimeSheetController(TimeSheetService timeSheetService, SecurityService securityService) {
+		super();
+		this.timeSheetService = timeSheetService;
+		this.securityService = securityService;
+	}
+
+	@Operation(summary = "Save changes in timesheet", description = "Save time, daily comments and global comments")
 	@PostMapping("/save")
 	public ResponseEntity<Map<String, String>> save(@RequestBody TimeSheetRequestDTO request) {
 		try {
@@ -40,6 +54,7 @@ public class TimeSheetController {
 		}
 	}
 
+	@Operation(summary = "Get timesheet by week ID", description = "Return timesheet by week ID")
 	@GetMapping("/my-timesheet/{weekId}")
 	public ResponseEntity<TimeSheetRequestDTO> getTimeSheetByWeek(@PathVariable String weekId) {
 		Long userId = securityService.getCurrentUserId();

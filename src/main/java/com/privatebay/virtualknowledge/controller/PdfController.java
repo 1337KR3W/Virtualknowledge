@@ -1,6 +1,5 @@
 package com.privatebay.virtualknowledge.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -9,24 +8,36 @@ import org.springframework.web.bind.annotation.*;
 
 import com.privatebay.virtualknowledge.dto.TimeSheetRequestDTO;
 import com.privatebay.virtualknowledge.service.TimeSheetService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import com.privatebay.virtualknowledge.service.SecurityService;
 import com.privatebay.virtualknowledge.service.PdfGeneratorService;
 
 @RestController
 @RequestMapping("/pdf")
 @CrossOrigin(origins = "http://localhost:4200")
+@Tag(name = "Pdf", description = "Endpoints for PdfGeneration endpoints")
 public class PdfController {
 
-    @Autowired
-    private TimeSheetService timeSheetService;
+    
+    private final TimeSheetService timeSheetService;
+    private final SecurityService securityService;
+    private final PdfGeneratorService pdfGeneratorService;
 
-    @Autowired
-    private SecurityService securityService;
+    
+    public PdfController(TimeSheetService timeSheetService, SecurityService securityService,
+			PdfGeneratorService pdfGeneratorService) {
+		super();
+		this.timeSheetService = timeSheetService;
+		this.securityService = securityService;
+		this.pdfGeneratorService = pdfGeneratorService;
+	}
 
-    @Autowired
-    private PdfGeneratorService pdfGeneratorService;
 
-    @GetMapping("/timesheet/{weekId}")
+	@Operation(summary = "Download weekly timesheet in PDF format", description = "Downloads a pdf with selected week in timesheet component by clicking in download button")
+	@GetMapping("/timesheet/{weekId}")
     public ResponseEntity<byte[]> downloadWeeklyTimesheetPdf(@PathVariable String weekId) {
         try {
             Long userId = securityService.getCurrentUserId();
