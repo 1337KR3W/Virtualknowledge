@@ -139,4 +139,9 @@ public class UserService {
 
 		return userMapper.toResponseDTO(userRepository.save(user));
 	}
+
+	@Transactional(readOnly = true)
+	public List<UserResponseDTO> findUsersWithoutDepartment() {
+		return userRepository.findAll().stream().filter(u -> u.getDepartment() == null).map(userMapper::toResponseDTO).collect(Collectors.toList());
+	}
 }

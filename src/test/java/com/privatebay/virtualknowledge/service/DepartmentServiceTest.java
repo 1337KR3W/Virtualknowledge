@@ -21,93 +21,96 @@ import com.privatebay.virtualknowledge.repository.UserRepository;
 public class DepartmentServiceTest {
 
 	@Mock
-    private DepartmentRepository departmentRepository;
-    @Mock
-    private UserRepository userRepository;
-    @Mock
-    private DepartmentMapper departmentMapper;
+	private DepartmentRepository departmentRepository;
+	@Mock
+	private UserRepository userRepository;
+	@Mock
+	private DepartmentMapper departmentMapper;
 
-    @InjectMocks
-    private DepartmentService departmentService;
+	@InjectMocks
+	private DepartmentService departmentService;
 
 	@Test
 	void createDepartment_shouldCreateDepartment_WhenNameIsUnique() {
-        DepartmentRequestDTO dto = new DepartmentRequestDTO("Successfull Department");
-        
-        when(departmentRepository.findByName(anyString())).thenReturn(List.of());
-        
-        when(departmentRepository.save(any(Department.class))).thenAnswer(i -> i.getArgument(0));
-        
-        DepartmentResponseDTO expectedDto = new DepartmentResponseDTO();
-        expectedDto.setName("Successfull Department");
-        when(departmentMapper.toResponseDTO(any(Department.class))).thenReturn(expectedDto);
+		DepartmentRequestDTO dto = new DepartmentRequestDTO("Successfull Department");
 
-        DepartmentResponseDTO result = departmentService.createDepartment(dto);
+		when(departmentRepository.findByName(anyString())).thenReturn(List.of());
 
-        assertNotNull(result);
-        assertEquals("Successfull Department", result.getName());
+		when(departmentRepository.save(any(Department.class))).thenAnswer(i -> i.getArgument(0));
+
+		DepartmentResponseDTO expectedDto = new DepartmentResponseDTO();
+		expectedDto.setName("Successfull Department");
+		when(departmentMapper.toResponseDTO(any(Department.class))).thenReturn(expectedDto);
+
+		DepartmentResponseDTO result = departmentService.createDepartment(dto);
+
+		assertNotNull(result);
+		assertEquals("Successfull Department", result.getName());
 	}
-	
+
 	@Test
 	void createDepartment_ShouldThrowException_WhenRequiredNameFieldIsMissing() {
 
-	    DepartmentRequestDTO dto = new DepartmentRequestDTO();
-	    
-	    assertThrows(IllegalArgumentException.class, () -> {
-	        departmentService.createDepartment(dto);
-	    });
-	    
-	    verifyNoInteractions(userRepository);
+		DepartmentRequestDTO dto = new DepartmentRequestDTO();
+
+		assertThrows(IllegalArgumentException.class, () -> {
+			departmentService.createDepartment(dto);
+		});
+
+		verifyNoInteractions(userRepository);
 	}
-	
+
 	@Test
-    void getAllDepartments_ShouldReturnList_WhenDepartmentsExist() {
-        Department dept = new Department();
-        when(departmentRepository.findAll()).thenReturn(List.of(dept));
-        when(departmentMapper.toResponseDTO(any())).thenReturn(new DepartmentResponseDTO());
+	void getAllDepartments_ShouldReturnList_WhenDepartmentsExist() {
+		Department dept = new Department();
+		when(departmentRepository.findAll()).thenReturn(List.of(dept));
+		when(departmentMapper.toResponseDTO(any())).thenReturn(new DepartmentResponseDTO());
 
-        List<DepartmentResponseDTO> result = departmentService.getAllDepartments();
+		List<DepartmentResponseDTO> result = departmentService.getAllDepartments();
 
-        assertEquals(1, result.size());
-        verify(departmentRepository).findAll();
-    }
+		assertEquals(1, result.size());
+		verify(departmentRepository).findAll();
+	}
 
-    @Test
-    void getDepartment_ShouldThrowException_WhenIdNotFound() {
-        when(departmentRepository.findById(1L)).thenReturn(Optional.empty());
+	@Test
+	void getDepartment_ShouldThrowException_WhenIdNotFound() {
+		when(departmentRepository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(RuntimeException.class, () -> departmentService.getDepartment(1L));
-    }
+		assertThrows(RuntimeException.class, () -> departmentService.getDepartment(1L));
+	}
 
-    @Test
-    void updateDepartment_ShouldUpdate_WhenExists() {
-        Department existingDept = new Department();
-        when(departmentRepository.findById(1L)).thenReturn(Optional.of(existingDept));
-        when(departmentRepository.save(any(Department.class))).thenAnswer(i -> i.getArgument(0));
-        when(departmentMapper.toResponseDTO(any())).thenReturn(new DepartmentResponseDTO());
+	@Test
+	void updateDepartment_ShouldUpdate_WhenExists() {
+		Department existingDept = new Department();
+		when(departmentRepository.findById(1L)).thenReturn(Optional.of(existingDept));
+		when(departmentRepository.save(any(Department.class))).thenAnswer(i -> i.getArgument(0));
+		when(departmentMapper.toResponseDTO(any())).thenReturn(new DepartmentResponseDTO());
 
-        DepartmentRequestDTO dto = new DepartmentRequestDTO("New Name");
-        DepartmentResponseDTO result = departmentService.updateDepartment(1L, dto);
+		DepartmentRequestDTO dto = new DepartmentRequestDTO("New Name");
+		DepartmentResponseDTO result = departmentService.updateDepartment(1L, dto);
 
-        assertNotNull(result);
-        assertEquals("New Name", existingDept.getName());
-        verify(departmentRepository).save(existingDept);
-    }
+		assertNotNull(result);
+		assertEquals("New Name", existingDept.getName());
+		verify(departmentRepository).save(existingDept);
+	}
 
-    @Test
-    void deleteDepartment_ShouldDelete_WhenExists() {
-        when(departmentRepository.existsById(1L)).thenReturn(true);
-        
-        departmentService.deleteDepartment(1L);
-        
-        verify(departmentRepository).deleteById(1L);
-    }
+	@Test
+	void deleteDepartment_ShouldDelete_WhenExists() {
+
+		Long dptoId = 1L;
+		Department dpto = new Department("DEPARTMENT FOR TESTING");
+		when(departmentRepository.findById(dptoId)).thenReturn(Optional.of(dpto));
+		departmentService.deleteDepartment(dptoId);
+		verify(departmentRepository).delete(dpto);
+		verify(departmentRepository, never()).deleteById(anyLong());
+	}
 
     @Test
     void deleteDepartment_ShouldThrowException_WhenNotExists() {
-        when(departmentRepository.existsById(1L)).thenReturn(false);
-        
+    	
+        when(departmentRepository.findById(1L)).thenReturn(Optional.empty());
         assertThrows(RuntimeException.class, () -> departmentService.deleteDepartment(1L));
+        verify(departmentRepository, never()).delete(any(Department.class));
     }
-	
+
 }

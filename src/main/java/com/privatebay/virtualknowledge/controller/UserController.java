@@ -63,6 +63,13 @@ public class UserController {
         return ResponseEntity.ok(userService.findAll());
     }
     
+    @Operation(summary = "List all users without department", description = "Only admins can list all users without department")
+    @GetMapping("/admin/no-department")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<List<UserResponseDTO>> getAllUsersWithoutDepartment() {
+        return ResponseEntity.ok(userService.findUsersWithoutDepartment());
+    }
+    
     @Operation(summary = "Update user by user ID", description = "Only admins can update users")
 	@PutMapping("/admin/edit/{id}")
 	@PreAuthorize("hasAuthority('ROLE_ADMIN')")

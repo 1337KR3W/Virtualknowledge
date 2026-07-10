@@ -36,7 +36,6 @@ public class UserRequestDTO {
 	private Long roleId;
 
 	@Schema(description = "User department ID", example = "4", requiredMode = Schema.RequiredMode.REQUIRED)
-	@NotNull
 	private Long departmentId;
 
 	@Schema(description = "User status", example = "ACTIVE", requiredMode = Schema.RequiredMode.REQUIRED)
