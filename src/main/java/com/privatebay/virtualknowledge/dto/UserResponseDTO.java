@@ -2,15 +2,36 @@ package com.privatebay.virtualknowledge.dto;
 
 import com.privatebay.virtualknowledge.entity.User;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "User detail data returned from API")
 public class UserResponseDTO {
+
+	@Schema(description = "Unique user identifier", example = "12")
 	private Long id;
+
+	@Schema(description = "User first name", example = "Ana María")
 	private String firstName;
+
+	@Schema(description = "User last name", example = "Romero Muñoz")
 	private String lastName;
+
+	@Schema(description = "User email", example = "ana@privatebay.com")
 	private String email;
+
+	@Schema(description = "User status", example = "ACTIVE")
 	private String status;
+
+	@Schema(description = "User role name", example = "ROLE_USER")
 	private String roleName;
+
+	@Schema(description = "User role ID", example = "2")
 	private Long roleId;
+	
+	@Schema(description = "User department name", example = "Development")
 	private String departmentName;
+
+	@Schema(description = "User department ID", example = "9")
 	private Long departmentId;
 
 	public UserResponseDTO() {
@@ -26,7 +47,7 @@ public class UserResponseDTO {
 		this.roleId = user.getRole().getId();
 		this.departmentName = user.getDepartment().getName();
 		this.departmentId = user.getDepartment().getId();
-		
+
 	}
 
 	public Long getId() {
@@ -100,6 +121,5 @@ public class UserResponseDTO {
 	public void setDepartmentId(Long departmentId) {
 		this.departmentId = departmentId;
 	}
-	
-	
+
 }
