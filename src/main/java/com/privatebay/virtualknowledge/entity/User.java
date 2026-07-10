@@ -45,7 +45,7 @@ public class User {
 	private LocalDateTime registrationDate = LocalDateTime.now();
 
 	@Enumerated(EnumType.STRING)
-	@Column(nullable = false, length = 20)
+	@Column(length = 20, nullable = false)
 	private UserStatus status = UserStatus.ACTIVE;
 
 	@ManyToOne(fetch = FetchType.EAGER)
@@ -56,7 +56,7 @@ public class User {
 	private Set<Project> projects = new HashSet<>();
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "department_id", nullable = false)
+	@JoinColumn(name = "department_id", nullable = true)
 	private Department department;
 	
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -117,6 +117,11 @@ public class User {
 
 	public Long getId() {
 		return id;
+	}
+	
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public LocalDateTime getRegistrationDate() {

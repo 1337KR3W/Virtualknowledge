@@ -3,6 +3,7 @@ package com.privatebay.virtualknowledge.service;
 import com.privatebay.virtualknowledge.dto.DepartmentRequestDTO;
 import com.privatebay.virtualknowledge.dto.DepartmentResponseDTO;
 import com.privatebay.virtualknowledge.entity.Department;
+import com.privatebay.virtualknowledge.entity.Project;
 import com.privatebay.virtualknowledge.entity.User;
 import com.privatebay.virtualknowledge.mapper.DepartmentMapper;
 import com.privatebay.virtualknowledge.repository.DepartmentRepository;
@@ -45,10 +46,10 @@ public class DepartmentService {
 		if (!existing.isEmpty()) {
 			throw new IllegalArgumentException("Department already exists.");
 		}
-		
+
 		if (dto.getName() == null || dto.getName().isEmpty()) {
-	        throw new IllegalArgumentException("Department name is required");
-	    }
+			throw new IllegalArgumentException("Department name is required");
+		}
 
 		Department department = new Department();
 		department.setName(dto.getName());
@@ -69,18 +70,45 @@ public class DepartmentService {
 	}
 
 	private void assignUsersToDepartment(Department department, List<Long> userIds) {
-		if (userIds != null) {
-			List<User> users = userRepository.findAllById(userIds);
-			department.setUsers(users);
-		} else {
-			department.setUsers(List.of());
+		for (User u : department.getUsers()) {
+			u.setDepartment(null);
+		}
+
+		department.getUsers().clear();
+
+		if (userIds != null && !userIds.isEmpty()) {
+			List<User> newUsers = userRepository.findAllById(userIds);
+			for (User u : newUsers) {
+				u.setDepartment(department);
+				department.getUsers().add(u);
+			}
 		}
 	}
 
+	@Transactional
 	public void deleteDepartment(Long id) {
-		if (!departmentRepository.existsById(id)) {
-			throw new RuntimeException("Department not found with ID: " + id);
+		Department dept = departmentRepository.findById(id)
+				.orElseThrow(() -> new RuntimeException("Department not found with ID: " + id));
+
+		if (dept.getUsers() != null) {
+			for (User user : dept.getUsers()) {
+				user.setDepartment(null);
+			}
+			dept.getUsers().clear();
 		}
-		departmentRepository.deleteById(id);
+
+		if (dept.getProjects() != null) {
+			for (Project project : dept.getProjects()) {
+				project.setDepartment(null);
+			}
+			dept.getProjects().clear();
+		}
+
+		departmentRepository.delete(dept);
+	}
+
+	public DepartmentResponseDTO getDepartmentByUserId(Long id) {
+		return departmentRepository.findByUserId(id).map(departmentMapper::toResponseDTO)
+				.orElseThrow(() -> new RuntimeException("Department not found with ID: " + id));
 	}
 }

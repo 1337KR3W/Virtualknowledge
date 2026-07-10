@@ -1,30 +1,27 @@
 package com.privatebay.virtualknowledge.mapper;
 
-import com.privatebay.virtualknowledge.dto.DepartmentResponseDTO;
-import com.privatebay.virtualknowledge.entity.Department;
-import com.privatebay.virtualknowledge.entity.User;
-import org.springframework.stereotype.Component;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Component
-public class DepartmentMapper {
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-    public DepartmentResponseDTO toResponseDTO(Department department) {
-        if (department == null) return null;
+import com.privatebay.virtualknowledge.dto.DepartmentResponseDTO;
+import com.privatebay.virtualknowledge.entity.Department;
+import com.privatebay.virtualknowledge.entity.User;
 
-        DepartmentResponseDTO dto = new DepartmentResponseDTO();
-        dto.setId(department.getId());
-        dto.setName(department.getName());
-        
-        if (department.getUsers() != null) {
-            List<Long> userIds = department.getUsers().stream()
-                    .map(User::getId)
-                    .collect(Collectors.toList());
-            dto.setUserIds(userIds);
-        }
-        
-        return dto;
-    }
+@Mapper(componentModel = "spring")
+public interface DepartmentMapper {
+
+	@Mapping(target = "userIds", source = "users")
+	DepartmentResponseDTO toResponseDTO(Department department);
+
+	default List<Long> mapUsersToIds(List<User> users) {
+		if (users == null) {
+			return null;
+		}
+
+		return users.stream().map(User::getId).collect(Collectors.toList());
+	}
+
 }

@@ -1,11 +1,26 @@
 package com.privatebay.virtualknowledge.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Response after login/register successfully, by containing JWT and user details")
 public class AuthResponseDTO {
+	
+	@Schema(description = "Token JWT para las peticiones autenticadas", example = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...")
 	private String token;
+	
+	@Schema(description = "Unique user ID", example = "1")
 	private Long id;
+	
+	@Schema(description = "User email", example = "juan@empresa.com")
 	private String email;
+	
+	@Schema(description = "User full name", example = "Victoria Pérez Castillejo")
 	private String name;
+	
+	@Schema(description = "User assigned role", example = "ROLE_USER")
 	private String role;
+	
+	@Schema(description = "Department name of user", example = "Development")
 	private String departmentName;
 	private String refreshToken;
 

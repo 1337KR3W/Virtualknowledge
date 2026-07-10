@@ -3,21 +3,28 @@ package com.privatebay.virtualknowledge.dto;
 import java.time.LocalDate;
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+@Schema(description = "Necessary data in order to create or update a timesheet")
 public class TimeSheetRequestDTO {
 	
+	@Schema(description = "Week ID", example = "2026-W28")
 	@Size(max = 10)
 	private String weekId;
 	
+	@Schema(description = "List of corresponding dates from week", example = "[\"2026-07-06\", \"2026-07-07\", \"2026-07-08\"]")
 	private List<LocalDate> weekDates;
 	
+	@Schema(description = "Weekly global comment", example = "I'm on holidays during the week.")
 	@Size(max = 500)
 	private String globalComment;
 	
+	@Schema(description = "List of project records")
 	private List<ProjectTimeRowDTO> rows;
 	
+	@Schema(description = "Timesheet user ID", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
 	@NotNull
 	private Long userId;
 

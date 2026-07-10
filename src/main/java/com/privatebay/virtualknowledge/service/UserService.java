@@ -63,7 +63,7 @@ public class UserService {
 		user.setPassword(passwordEncoder.encode(request.getPassword()));
 		user.setRegistrationDate(LocalDateTime.now());
 
-		user.setStatus(request.getStatus() != null ? UserStatus.valueOf(request.getStatus().toUpperCase())
+		user.setStatus(request.getStatus() != null ? UserStatus.valueOf(request.getStatus().toString())
 				: UserStatus.ACTIVE);
 
 		user.setRole(role);
@@ -123,7 +123,7 @@ public class UserService {
 			user.setPassword(passwordEncoder.encode(dto.getPassword()));
 		}
 
-		user.setStatus(dto.getStatus() != null ? UserStatus.valueOf(dto.getStatus().toUpperCase()) : user.getStatus());
+		user.setStatus(dto.getStatus() != null ? UserStatus.valueOf(dto.getStatus().toString()) : user.getStatus());
 
 		if (dto.getRoleId() != null) {
 			Role role = roleRepository.findById(dto.getRoleId())
@@ -138,5 +138,10 @@ public class UserService {
 		}
 
 		return userMapper.toResponseDTO(userRepository.save(user));
+	}
+
+	@Transactional(readOnly = true)
+	public List<UserResponseDTO> findUsersWithoutDepartment() {
+		return userRepository.findAll().stream().filter(u -> u.getDepartment() == null).map(userMapper::toResponseDTO).collect(Collectors.toList());
 	}
 }
