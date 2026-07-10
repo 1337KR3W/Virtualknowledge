@@ -23,7 +23,7 @@ public class Department {
 	@Column(nullable = false, length = 100, unique = true)
 	private String name;
 
-	@OneToMany(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "department", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	private List<User> users = new ArrayList<>();
 
 	@OneToMany(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)

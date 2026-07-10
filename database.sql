@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS users (
   password VARCHAR(255) NOT NULL,
   registration_date DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
   status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
-  department_id BIGINT NOT NULL,
+  department_id BIGINT,
   role_id BIGINT NOT NULL,
   CONSTRAINT fk_user_dept FOREIGN KEY (department_id) REFERENCES departments(id) ON DELETE CASCADE,
   CONSTRAINT fk_user_role FOREIGN KEY (role_id) REFERENCES roles(id)
